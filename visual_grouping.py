@@ -33,6 +33,11 @@
 ###                 some comments on this in his modvis.py example
 ###             : - implement 3d collision? (ie, 3d euclidian distance)
 ###             : - extend-possible-slots has to be called
+###             : - the attribute error that occurs if 3d collision is used
+###                 without screen-z being defined is silent
+###             : - presumably, the same with the attribute error that would be
+###                 raised in box_nearest_pt() if targetPoint does not have
+###                 width/height attributes
 ###
 ### --- History ---
 ### 2021.09.14   author [0.1]
@@ -41,6 +46,7 @@
 
 import math
 import actr
+import warnings
 
 ##############################################################################
 # collision methods
@@ -52,6 +58,17 @@ import actr
 #       - 'point2': the second visPoint object eligible for collision testing
 #   - collision methods must return only T/F - whether or not the two points
 #     'collide'
+
+def vispoint_distance(p1,p2):
+    
+    p1x = p1[0]
+    p1y = p1[1]
+    p2x = p2[0]
+    p2y = p2[1]
+    
+    ptDist = math.sqrt((p2x-p1x)**2 + (p2y-p1y)**2)
+    
+    return(ptDist)
 
 def point_collision(argDict):
     """Calculates the euclidian distance between two points.
@@ -81,8 +98,125 @@ def point_collision(argDict):
     return(ptDist<=radius)
     
     
-def box_collision():
-    pass
+def box_collision(argDict):
+    
+    p1 = argDict['point1']
+    p2 = argDict['point2']
+    radius = argDict['radius']
+    
+    # box_nearest_pt creates a box around p2 using p2's x/y and width/height
+    # information, and then determines the point along this box boundary that
+    # is closest to the x/y location of p1 (returns False if p1 is within 
+    # p2's box)
+    target = box_nearest_pt(p1,p2)
+    
+    # defines a box around p1, and determines whether 
+    if hasattr(p1,'width') and hasattr(p1,'height'):
+        
+        p1x = getattr(p1,'screen-x')
+        p1y = getattr(p1,'screen-y')
+        p1w = getattr(p1,'width')
+        p1h = getattr(p1,'height')
+        
+        leftEdge = p1x - (p1w/2)
+        rightEdge = p1x + (p1w/2)
+        bottomEdge = p1y - (p1h/2)
+        topEdge = p1y + (p1h/2)
+    else:
+        # these were set to 0 in John's original code but this isn't sensible
+        leftEdge = 1
+        rightEdge = 1
+        bottomEdge = 1
+        topEdge = 1
+        
+    # in John's words: "if there was a target, check it, otherwise we are overlapping and just return T"
+    if target:
+        
+        tx = target[0]
+        ty = target[1]
+        
+        hitVert = (tx >= leftEdge) and (tx <= rightEdge) and (ty <= (topEdge+radius)) and (ty >= (bottomEdge-radius))
+        hitHorz = (tx >= (leftEdge-radius)) and (tx <= (rightEdge+radius)) and (ty <= topEdge) and (ty >= bottomEdge)
+        
+        hitTopLeft = (vispoint_distance((leftEdge,topEdge),(tx,ty)) <= radius)
+        hitTopRight = (vispoint_distance((rightEdge,topEdge),(tx,ty)) <= radius)
+        
+        hitBottomLeft = (vispoint_distance((leftEdge,bottomEdge),(tx,ty)) <= radius)
+        hitBottomRight = (vispoint_distance((rightEdge,bottomEdge),(tx,ty)) <= radius)
+        
+        ptsCollide = (hitVert or hitHorz or hitTopLeft or hitTopRight or hitBottomLeft or hitBottomRight)
+        
+    else:
+        ptsCollide = True
+    
+    
+    return(ptsCollide)
+    
+
+def box_nearest_pt(originPt,targetPt):
+    """Helper function for box_collision(). If targetPt has a height/width,
+        returns the point on the perimeter of the box around targetPt (defined
+        by the height/width) that is closest to the x/y position of the 
+        originPt. If targetPt does not have a height/width, assume a 
+        height/width of 1. If originPt falls within the box defined by the 
+        targetPt's height/width, returns False."""
+    
+    originX = getattr(originPt,'screen-x')
+    originY = getattr(originPt,'screen-y')
+    
+    if hasattr(targetPt,'width') and hasattr(targetPt,'height'):
+        try:
+            targetWidth = getattr(targetPt,'width')
+            targetHeight = getattr(targetPt,'height')
+            targetX = getattr(targetPt,'screen-x')
+            targetY = getattr(targetPt,'screen-y')
+        
+            leftEdge = targetX - (targetWidth/2)
+            rightEdge = targetX + (targetWidth/2)
+            bottomEdge = targetY - (targetHeight/2)
+            topEdge = targetY + (targetHeight/2)
+        except AttributeError:
+            raise
+    else:
+        # these were set to 0 in John's original code
+        warnings.warn("Warning...assuming visual feature has width/height of 1, as they are not defined as attributes of the feature")
+        leftEdge = 1
+        rightEdge = 1
+        bottomEdge = 1
+        topEdge = 1
+        
+    # first four if statements check if origin point is outside of left/right
+    # edges AND top/bottom edges;
+    # second four if statements check if origin point is OUTSIDE of left/right
+    # edge and WITHIN the top/bottom edges, or vice-versa
+    if (originX < leftEdge) and (originY < bottomEdge):
+        closestPt = (leftEdge,bottomEdge)
+    elif (originX < leftEdge) and (originY > topEdge):
+        closestPt = (leftEdge,topEdge)
+    elif (originX > rightEdge) and (originY < bottomEdge):
+        closestPt = (rightEdge,bottomEdge)
+    elif (originX > rightEdge) and (originY > topEdge):
+        closestPt = (rightEdge,topEdge)
+    elif (originX < leftEdge) and (originY >= bottomEdge) and (originY <= topEdge):
+        closestPt = (leftEdge, originY)
+    elif (originX > rightEdge) and (originY >= bottomEdge) and (originY <= topEdge):
+        closestPt = (rightEdge,originY)
+    elif (originY > topEdge) and (originX >= leftEdge) and (originX <= rightEdge):
+        closestPt = (originX,topEdge)
+    elif (originY < bottomEdge) and (originX >= leftEdge) and (originX <= rightEdge):
+        closestPt = (originX,bottomEdge)
+    else:
+        closestPt = False
+        
+    return(closestPt)
+        
+            
+        
+        
+    
+        
+    
+    
 
 def determine_pt2pt_collision(mode,argDict):
     switcher = {
@@ -348,7 +482,11 @@ def proc_display_monitor(cmd,params,success,results):
     global vgScene
     global vgPrevScene
     
-    vgScene = visGroups(currentVisicon,25,'point')
+    try:
+        vgScene = visGroups(currentVisicon,25,'box')
+    except AttributeError:
+        raise
+    
     
 actr.add_command("pd-mon",proc_display_monitor)
 actr.current_connection.interface.send("monitor","proc-display","pd-mon","before")
@@ -369,11 +507,11 @@ def test():
     ids = actr.add_visicon_features(['screen-x',10,'screen-y',20,'color','blue'],
                                     ['screen-x',20,'screen-y',30,'color','red'],
                                     ['screen-x',0,'screen-y',0,'color','green'],
-                                    ['screen-x',500,'screen-y',500,'color','orange'],
-                                    ['screen-x',500,'screen-y',500,'color','purple'],
-                                    ['screen-x',500,'screen-y',500,'color','turquoise'])
+                                    ['screen-x',510,'screen-y',490,'color','orange'],
+                                    ['screen-x',505,'screen-y',510,'color','purple'],
+                                    ['screen-x',500,'screen-y',515,'color','turquoise'])
     
-    actr.delete_visicon_features(ids[1])
+    #actr.delete_visicon_features(ids[1])
     actr.run(.1)
     #actr.print_visicon()
     #actr.buffer_chunk("visual-location")
