@@ -59,21 +59,23 @@ import warnings
 #   - collision methods must return only T/F - whether or not the two points
 #     'collide'
 
-def vispoint_distance(p1,p2):
+def xy_euclidian_distance(p1,p2):
+    """Calculates the euclidian distance between the x/y position of two 
+       points."""
     
     p1x = p1[0]
     p1y = p1[1]
     p2x = p2[0]
     p2y = p2[1]
     
-    ptDist = math.sqrt((p2x-p1x)**2 + (p2y-p1y)**2)
+    dist = math.sqrt((p2x-p1x)**2 + (p2y-p1y)**2)
     
-    return(ptDist)
+    return(dist)
 
 def point_collision(argDict):
-    """Calculates the euclidian distance between two points.
-       Returns True if the distance is less than the given radius; otherwise,
-       False."""
+    """Determines if the euclidian distance between two points is less than a 
+       given radius. Returns True if the distance is less than or equal to the
+       given radius; otherwise, False."""
     
     p1 = argDict['point1']
     p2 = argDict['point2']
@@ -86,7 +88,7 @@ def point_collision(argDict):
     p2y = getattr(p2,'screen-y')
     
     if not useZ:
-        ptDist = math.sqrt((p2x-p1x)**2 + (p2y-p1y)**2)
+        ptDist = xy_euclidian_distance((p1x,p1y),(p2x,p2y))
     else:
         try:
             p1z = getattr(p1,'screen-z')
@@ -135,14 +137,17 @@ def box_collision(argDict):
         tx = target[0]
         ty = target[1]
         
+        # if the target point's x position is within the left and right edges of point1's box, and the target point's y position is within the top/bottom edges padded by the given radius,
+        # it's a hit vertically. hitHorz is the same vice-versa: within the top/bottom edge, and within the left/right edges padded by the given radius
         hitVert = (tx >= leftEdge) and (tx <= rightEdge) and (ty <= (topEdge+radius)) and (ty >= (bottomEdge-radius))
         hitHorz = (tx >= (leftEdge-radius)) and (tx <= (rightEdge+radius)) and (ty <= topEdge) and (ty >= bottomEdge)
         
-        hitTopLeft = (vispoint_distance((leftEdge,topEdge),(tx,ty)) <= radius)
-        hitTopRight = (vispoint_distance((rightEdge,topEdge),(tx,ty)) <= radius)
+        # for top/bottom left/right hits, draws a circle of radius equal to the given radius around each corner of p1's box, hit if the target falls within the circle?
+        hitTopLeft = (xy_euclidian_distance((leftEdge,topEdge),(tx,ty)) <= radius)
+        hitTopRight = (xy_euclidian_distance((rightEdge,topEdge),(tx,ty)) <= radius)
         
-        hitBottomLeft = (vispoint_distance((leftEdge,bottomEdge),(tx,ty)) <= radius)
-        hitBottomRight = (vispoint_distance((rightEdge,bottomEdge),(tx,ty)) <= radius)
+        hitBottomLeft = (xy_euclidian_distance((leftEdge,bottomEdge),(tx,ty)) <= radius)
+        hitBottomRight = (xy_euclidian_distance((rightEdge,bottomEdge),(tx,ty)) <= radius)
         
         ptsCollide = (hitVert or hitHorz or hitTopLeft or hitTopRight or hitBottomLeft or hitBottomRight)
         
