@@ -509,12 +509,12 @@ def test():
     
 
 
-    ids = actr.add_visicon_features(['screen-x',10,'screen-y',20,'color','blue'],
-                                    ['screen-x',20,'screen-y',30,'color','red'],
-                                    ['screen-x',0,'screen-y',0,'color','green'],
-                                    ['screen-x',510,'screen-y',490,'color','orange'],
-                                    ['screen-x',505,'screen-y',510,'color','purple'],
-                                    ['screen-x',500,'screen-y',515,'color','turquoise'])
+    ids = actr.add_visicon_features(['screen-x',10,'screen-y',20,'height',1,'width',1,'color','blue'],
+                                    ['screen-x',20,'screen-y',30,'height',1,'width',1,'color','red'],
+                                    ['screen-x',0,'screen-y',0,'height',1,'width',1,'color','green'],
+                                    ['screen-x',510,'screen-y',490,'height',1,'width',1,'color','orange'],
+                                    ['screen-x',505,'screen-y',510,'height',1,'width',1,'color','purple'],
+                                    ['screen-x',500,'screen-y',515,'height',1,'width',1,'color','turquoise'])
     
     #actr.delete_visicon_features(ids[1])
     actr.run(.1)
