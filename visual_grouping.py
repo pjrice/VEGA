@@ -335,7 +335,7 @@ class visGroups:
                 
                 hits = []
                 
-                for target in pts2check:
+                for target in self.visPoints:
                     if not target.checked:
                         
                         argDict = {'point1':pt,
