@@ -61,7 +61,7 @@ import warnings
 
 def xy_euclidian_distance(p1,p2):
     """Calculates the euclidian distance between the x/y position of two 
-       points."""
+       points. p1 and p2 should be input as (x,y) positions."""
     
     p1x = p1[0]
     p1y = p1[1]
@@ -216,12 +216,6 @@ def box_nearest_pt(originPt,targetPt):
     return(closestPt)
         
             
-        
-        
-    
-        
-    
-    
 
 def determine_pt2pt_collision(mode,argDict):
     switcher = {
@@ -356,7 +350,27 @@ class visGroups:
                         
                         
                 
-        
+##############################################################################
+# Group labeling utilities
+
+def generic_naming(n):
+
+def determine_naming_type(namingType,n):
+    switcher = {
+        'generic':generic_naming,
+        'sequential':sequential_naming
+        }
+    
+    func = switcher.get(namingType, lambda: "Invalid naming type")
+    return(func(n))
+
+def gen_n_syms(n):
+    
+
+def label_groups(groupedScene,prevGroupedScene=None):
+    
+    if prevGroupedScene is None:
+        groupedScene.groupNames = gen_n_syms(groupedScene.groupCount)
 
             
         
@@ -488,7 +502,28 @@ def proc_display_monitor(cmd,params,success,results):
     global vgPrevScene
     
     try:
+        
+        # using the list of current visicon features in currentVisicon, group
+        # the scene using the specified radius and collision method
         vgScene = visGroups(currentVisicon,25,'box')
+        
+        # generate and apply labels for the newly determined groups
+        # label application first occurs in the python representation, and then
+        # the ACT-R chunk representation of a given feature is modified so that 
+        # a "group" slot is added with a value set to the generated group label
+        # inherit labels from vgPrevScene if possible
+        label_groups(vgScene,vgPrevScene)
+        
+        
+        # display boxes around the visicon content
+        
+        
+        
+        # now that groups have been determined and we've done everything we
+        # want with them, store the current scene as the previous scene
+        vgPrevScene = vgScene
+        
+        
     except AttributeError:
         raise
     
