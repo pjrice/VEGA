@@ -354,6 +354,7 @@ class visGroups:
 # Group labeling utilities
 
 def generic_naming(n):
+    pass
 
 def determine_naming_type(namingType,n):
     switcher = {
@@ -365,6 +366,7 @@ def determine_naming_type(namingType,n):
     return(func(n))
 
 def gen_n_syms(n):
+    pass
     
 
 def label_groups(groupedScene,prevGroupedScene=None):
