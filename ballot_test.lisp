@@ -1,11 +1,14 @@
+;;------------------------------------- set default pathname -------------------------------------
+(setf *default-pathname-defaults* #P"/home/ausmanpa/")
+
 ;;------------------------------------- load in ACT-R -------------------------------------
-(load (merge-pathnames "actr7/load-act-r.lisp" *load-truename*))
+(load (merge-pathnames "Desktop/ACTR_testing/actr7.x/load-act-r.lisp" *load-truename*))
 
 ;; ------------load JKL's visual grouping system (not needed this if the VG file is in the actr7/user-load)
 ;(load (merge-pathnames "actr7/user-loads/visual-grouping-modified.lisp" *load-truename*))
 
 ;;------------------------------------- load functions file -------------------------------------
-(load (merge-pathnames "combine.lisp" *load-truename*))
+(load (merge-pathnames "gp/VEGA/combine.lisp" *load-truename*))
 
 ;; ------------------------------------- load ACT-R environment -------------------------------------
 (run-environment)

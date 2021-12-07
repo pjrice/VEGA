@@ -301,10 +301,10 @@
 		
 		; Maps the buttons to various objects so that these values can be accessed in the click response method, where we only have accessed
 		; to the object itself
-		;(button-map (make-hash-table)) ; Maps the buttons to the array of candidate and party objects on screen (to use to change their color to blue)
-		;(button-state (make-hash-table)) ; Maps the buttons to their state (to know whether to set to blue or black)
-		;(button-index (make-hash-table)) ; Maps the button to their race's index in cntst-lst 
-		;(button-candidate (make-hash-table)) ; Maps the button to their associated candidate object from cntst-lst
+		(button-map (make-hash-table)) ; Maps the buttons to the array of candidate and party objects on screen (to use to change their color to blue)
+		(button-state (make-hash-table)) ; Maps the buttons to their state (to know whether to set to blue or black)
+		(button-index (make-hash-table)) ; Maps the button to their race's index in cntst-lst 
+		(button-candidate (make-hash-table)) ; Maps the button to their associated candidate object from cntst-lst
 		
 		 ; Holdovers from constructing a ballot with noise. Can make a new ballot with the values increased to get a ballot with noise
 		(noise 0)
@@ -339,7 +339,7 @@
 					(candidate (pop candidates))
 					(y-offset 20)
 					(index 0)
-					;(button_temp nil)
+					(button_temp nil)
 					)					
 
 					
@@ -359,27 +359,27 @@
 						(setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window window (party-name candidate) :color 'blue :x (+ randomx 200 (rand noise)) :y (+ randomy y-offset (rand noise))))
 
 						; Displays and stores buttons
-						;(setf button_temp (add-button-to-exp-window :color 'white :text "" :x randomx :y (+ randomy y-offset 2) :width 20 :height 10 :action 
-						;(lambda (button)
-						;(if (= (gethash button button-state) 0) 
-						;	(progn
-						;		(modify-button-for-exp-window button :color 'black)
-						;		; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'purple)
-						;		; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'purple)
-						;		; (log-candidate (cand-name (gethash button button-candidate)) (gethash button button-index)) 
-						;		(setf (gethash button button-state) 1))
-						;	(progn
-						;		(modify-button-for-exp-window button :color 'white)
-						;		; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'black)
-						;		; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'blue)
-						;		;(unlog-candidate (gethash button button-candidate)) 
-						;		(setf (gethash button button-state) 0))))))	
+						(setf button_temp (add-button-to-exp-window window :color 'white :text "" :x randomx :y (+ randomy y-offset 2) :width 20 :height 10 :action 
+						(lambda (button)
+						(if (= (gethash button button-state) 0) 
+							(progn
+								(modify-button-for-exp-window button :color 'black)
+								; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'purple)
+								; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'purple)
+								; (log-candidate (cand-name (gethash button button-candidate)) (gethash button button-index)) 
+								(setf (gethash button button-state) 1))
+							(progn
+								(modify-button-for-exp-window button :color 'white)
+								; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'black)
+								; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'blue)
+								;(unlog-candidate (gethash button button-candidate)) 
+								(setf (gethash button button-state) 0))))))	
 
 						; Button information, stored in hashmaps
-						;(setf (gethash button_temp button-map) candidate-party-object-array)
-						;(setf (gethash button_temp button-state) 0)
-						;(setf (gethash button_temp button-index) index)
-						;(setf (gethash button_temp button-candidate) candidate)
+						(setf (gethash button_temp button-map) candidate-party-object-array)
+						(setf (gethash button_temp button-state) 0)
+						(setf (gethash button_temp button-index) index)
+						(setf (gethash button_temp button-candidate) candidate)
 
 						
 						; Loop increment operations
