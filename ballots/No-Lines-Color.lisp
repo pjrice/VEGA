@@ -406,6 +406,8 @@
 	
 	)
 	
+	(install-device window)
+	
 	; Runs the model for 200 seconds on the ballot if use-model is true
 	(if use-model
 		(progn

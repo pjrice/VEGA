@@ -105,7 +105,6 @@
 		
 		(setf model-combination (append model-combination (list '(goal-focus Vote)))) ;Adds the start goal focus
 		
-		
 		; Loads model into this file
 		(clear-all)
 		(eval model-combination)

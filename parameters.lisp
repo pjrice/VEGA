@@ -26,8 +26,8 @@
 (sgp :v t :esc t :show-focus t)
 ; (sgp :v nil :esc t :show-focus t :process-cursor nil)
 
-	
-	
+(sgp :force-visual-commands t)
+
 (sgp :visual-finst-span 10) ;neccesary to avoid forgetting where we looked for the recognition strategies
 
 (sgp :visual-num-finsts 10)
