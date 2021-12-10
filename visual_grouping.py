@@ -82,17 +82,17 @@ def point_collision(argDict):
     radius = argDict['radius']
     useZ = argDict['useZ']
     
-    p1x = getattr(p1,'screen-x')
-    p1y = getattr(p1,'screen-y')
-    p2x = getattr(p2,'screen-x')
-    p2y = getattr(p2,'screen-y')
+    p1x = getattr(p1,'SCREEN-X')
+    p1y = getattr(p1,'SCREEN-Y')
+    p2x = getattr(p2,'SCREEN-X')
+    p2y = getattr(p2,'SCREEN-Y')
     
     if not useZ:
         ptDist = xy_euclidian_distance((p1x,p1y),(p2x,p2y))
     else:
         try:
-            p1z = getattr(p1,'screen-z')
-            p2z = getattr(p2,'screen-z')
+            p1z = getattr(p1,'SCREEN-Z')
+            p2z = getattr(p2,'SCREEN-Z')
             ptDist = math.sqrt((p2x-p1x)**2 + (p2y-p1y)**2 + (p2z-p1z)**2)
         except AttributeError:
             raise
@@ -113,12 +113,12 @@ def box_collision(argDict):
     target = box_nearest_pt(p1,p2)
     
     # defines a box around p1, and determines whether 
-    if hasattr(p1,'width') and hasattr(p1,'height'):
+    if hasattr(p1,'WIDTH') and hasattr(p1,'HEIGHT'):
         
-        p1x = getattr(p1,'screen-x')
-        p1y = getattr(p1,'screen-y')
-        p1w = getattr(p1,'width')
-        p1h = getattr(p1,'height')
+        p1x = getattr(p1,'SCREEN-X')
+        p1y = getattr(p1,'SCREEN-Y')
+        p1w = getattr(p1,'WIDTH')
+        p1h = getattr(p1,'HEIGHT')
         
         leftEdge = p1x - (p1w/2)
         rightEdge = p1x + (p1w/2)
@@ -166,15 +166,15 @@ def box_nearest_pt(originPt,targetPt):
         height/width of 1. If originPt falls within the box defined by the 
         targetPt's height/width, returns False."""
     
-    originX = getattr(originPt,'screen-x')
-    originY = getattr(originPt,'screen-y')
+    originX = getattr(originPt,'SCREEN-X')
+    originY = getattr(originPt,'SCREEN-Y')
     
-    if hasattr(targetPt,'width') and hasattr(targetPt,'height'):
+    if hasattr(targetPt,'WIDTH') and hasattr(targetPt,'HEIGHT'):
         try:
-            targetWidth = getattr(targetPt,'width')
-            targetHeight = getattr(targetPt,'height')
-            targetX = getattr(targetPt,'screen-x')
-            targetY = getattr(targetPt,'screen-y')
+            targetWidth = getattr(targetPt,'WIDTH')
+            targetHeight = getattr(targetPt,'HEIGHT')
+            targetX = getattr(targetPt,'SCREEN-X')
+            targetY = getattr(targetPt,'SCREEN-Y')
         
             leftEdge = targetX - (targetWidth/2)
             rightEdge = targetX + (targetWidth/2)
