@@ -14,7 +14,7 @@
 ;;; Filename    : No-Lines-Color.lisp
 ;;; Version     : 1
 ;;; 
-;;; Description : A ballot
+;;; Description : A ballot (with color, and background)
 ;;;				: * This file establishes an act-r window that represents a complete ballot with no lines seperating the races.
 ;;;
 ;;; Bugs        : * None known
@@ -23,8 +23,17 @@
 ;;;				: * See logging.lisp todo for more info
 ;;; 
 ;;; ----- History -----
-;;; 2019.9.27   Joshua Engels
-;;;				: * Created the file
+;;; 2019.9.20   Xianni Wang
+;;;				: * Created the file, inherited from Joshua Engels' "No-Line.lisp"
+;;; 2019.9.20   Xianni Wang
+;;;				: * added Dan's code (image-vdi) for adding image to background 
+;;;				: * added add-items-to-exp-window to display boxes (box first, then texts)
+;;;				: * added a paragraph in General Docs
+;;; 2019.9.25   Xianni Wang
+;;;				: * add tracing command (sgp :v t :vwt t :show-focus t)
+;;; 2019.10.7   Xianni Wang
+;;;				: * remove tracing command (sgp :v t :vwt t :show-focus t)
+;;;				: * modified and updated from "No-Line-Colors.lisp"
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -36,8 +45,10 @@
 ;;; Pressing the buttons causes a log candidate event to occur with the given candidate and other neccesary information (that's what the maps
 ;;; are for). The ballot is regularly laid out (with no noise), with candidates and parties and buttons sharing the same y value.
 ;;; Plus colors!
+;;;
+;;; To make the background box work, put the image .gif file into actr7/Environment/GUI/images
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;; This first section of code defines the list of races: their names, candidates, and parties, and are used in the second section to construction
 ;; the ballot
@@ -305,7 +316,8 @@
 		(button-state (make-hash-table)) ; Maps the buttons to their state (to know whether to set to blue or black)
 		(button-index (make-hash-table)) ; Maps the button to their race's index in cntst-lst 
 		(button-candidate (make-hash-table)) ; Maps the button to their associated candidate object from cntst-lst
-		
+		(button-race (make-hash-table))  ; Maps the button to their race index
+
 		 ; Holdovers from constructing a ballot with noise. Can make a new ballot with the values increased to get a ballot with noise
 		(noise 0)
 		(noise_macro 0))
@@ -339,10 +351,22 @@
 					(candidate (pop candidates))
 					(y-offset 20)
 					(index 0)
-					(button_temp nil)
-					)					
+					(button_temp nil))					
 
-					
+					;add background boxes
+					 ;; explicitly add instances of the new item to that window
+                                        (add-image-to-exp-window window "test" "lb.gif" :x (- randomx 5) :y (- randomy 5) :width 280 :height 75)
+   
+                                         ;; here we create our new items assuming that the corresponding files
+                                         ;; are available if we intend to have them shown in a visible window.
+                                         ;; the dialog-item-text is the value which the model will see when it
+                                         ;; attends to the image.
+                                         
+                                         ;; The first one does not provide an action function and thus the default
+                                         ;; action of printing the info when :vwt is true will be used.
+   
+                                        ;(make-instance 'image-vdi :file "lb.gif" :dialog-item-text "box" :x-pos (- randomx 5) :y-pos (- randomy 5) :width 280 :height 75))
+
 					; Adds the race name
 					(add-text-to-exp-window window (office-name contest) :color 'red :x randomx :y randomy)
 
@@ -353,10 +377,10 @@
 					do 	(progn 
 						
 						; Displays and stores candidates
-						(setf (aref candidate-party-object-array index) (add-text-to-exp-window window (cand-name candidate) :color 'purple :x (+ randomx 30 (rand noise)) :y (+ randomy y-offset (rand noise))))
+						(setf (aref candidate-party-object-array index) (add-text-to-exp-window window (cand-name candidate) :color 'purple :x (+ randomx 30 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
 						
 						; Displays and stores parties
-						(setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window window (party-name candidate) :color 'blue :x (+ randomx 200 (rand noise)) :y (+ randomy y-offset (rand noise))))
+						(setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window window (party-name candidate) :color 'blue :x (+ randomx 200 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
 
 						; Displays and stores buttons
 						(setf button_temp (add-button-to-exp-window window :color 'white :text "" :x randomx :y (+ randomy y-offset 2) :width 20 :height 10 :action 
@@ -364,12 +388,14 @@
 						(if (= (gethash button button-state) 0) 
 							(progn
 								(modify-button-for-exp-window button :color 'black)
+                                                                (proc-display)
 								; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'purple)
 								; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'purple)
 								; (log-candidate (cand-name (gethash button button-candidate)) (gethash button button-index)) 
 								(setf (gethash button button-state) 1))
 							(progn
 								(modify-button-for-exp-window button :color 'white)
+                                                                (proc-display)
 								; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'black)
 								; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'blue)
 								;(unlog-candidate (gethash button button-candidate)) 
@@ -380,6 +406,7 @@
 						(setf (gethash button_temp button-state) 0)
 						(setf (gethash button_temp button-index) index)
 						(setf (gethash button_temp button-candidate) candidate)
+                        ;(setf (gethash button_temp button-race) (- (length race-sizes) 1))
 
 						
 						; Loop increment operations

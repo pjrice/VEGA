@@ -16,7 +16,9 @@
 ;;--------------------------------------- load ballot --------------------------------------------
 ;; vertically aligned ballots
 (run-single '("No-Lines-Color" nil nil nil nil nil) t nil t)
-(run-single '("No-Lines-Color-Box" "all-perfect" nil nil nil nil) nil nil t)
+;(run-single '("No-Lines-Color-Box" "all-perfect" nil nil nil nil) nil nil t)
+(run-single '("No-Lines-Color-Box-New" nil nil nil nil nil) t nil t)
+
 
 ;; vertically misaligned ballots, random generated
 (run-single '("NLC-Offset-Random" nil nil nil nil nil) nil nil t)
