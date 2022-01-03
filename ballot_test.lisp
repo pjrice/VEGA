@@ -23,7 +23,8 @@
 ;; vertically misaligned ballots, random generated
 ;(run-single '("NLC-Offset-Random" nil nil nil nil nil) nil nil t)
 (run-single '("NLC-Offset-Random-New" nil nil nil nil nil) t nil t)
-(run-single '("NLC-Offset-Random-Box" nil nil nil nil nil) nil nil t)
+;(run-single '("NLC-Offset-Random-Box" nil nil nil nil nil) nil nil t)
+(run-single '("NLC-Offset-Random-Box-New" nil nil nil nil nil) nil nil t)
 
 ;; wisconsin ballot
 (run-single '("WisconsinBallot-Box" nil nil nil nil nil) nil nil t)
