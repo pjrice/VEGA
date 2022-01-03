@@ -601,7 +601,7 @@
 		(install-device window)
 		(proc-display)
 		(start-hand-at-mouse)
-		(if realtime (run 300 :real-time t) (run 300))
+		(if realtime (run 300 t) (run 300))
 		;(if dolog (log-ballot))
 		))
 ))

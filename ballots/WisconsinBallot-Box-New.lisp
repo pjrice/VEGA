@@ -1,20 +1,19 @@
 ;;;  -*- mode: LISP; Syntax: COMMON-LISP;  Base: 10 -*-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; 
-;;; Author      : Joshua Engels
-;;; Copyright   : (c) 2019 Joshua Engels
-;;; Address     : Lovett College
-;;;             : Rice University
+;;; Author      : Xianni Wang
+;;; Copyright   : (c) 2020 Xianni Wang
+;;; Address     : Rice University
 ;;;             : Houston, TX 77005
-;;;             : jae4@rice.edu
+;;;             : xw48@rice.edu
 ;;; 
 ;;; 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; 
-;;; Filename    : No-Lines-Color.lisp
+;;;  
+;;; Filename    : WisconsinBallot-Box.lisp
 ;;; Version     : 1
 ;;; 
-;;; Description : A ballot (with color, and background)
+;;; Description : Wisconsin ballot
 ;;;				: * This file establishes an act-r window that represents a complete ballot with no lines seperating the races.
 ;;;
 ;;; Bugs        : * None known
@@ -23,17 +22,9 @@
 ;;;				: * See logging.lisp todo for more info
 ;;; 
 ;;; ----- History -----
-;;; 2019.9.20   Xianni Wang
-;;;				: * Created the file, inherited from Joshua Engels' "No-Line.lisp"
-;;; 2019.9.20   Xianni Wang
-;;;				: * added Dan's code (image-vdi) for adding image to background 
-;;;				: * added add-items-to-exp-window to display boxes (box first, then texts)
-;;;				: * added a paragraph in General Docs
-;;; 2019.9.25   Xianni Wang
-;;;				: * add tracing command (sgp :v t :vwt t :show-focus t)
-;;; 2019.10.7   Xianni Wang
-;;;				: * remove tracing command (sgp :v t :vwt t :show-focus t)
-;;;				: * modified and updated from "No-Line-Colors.lisp"
+;;; 2020.05.17  Xianni Wang
+;;;				: * Created the file
+;;;				: * Modified from No-Lines-Color.lisp and NLC-Offset-Random-Box.lisp
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -45,10 +36,8 @@
 ;;; Pressing the buttons causes a log candidate event to occur with the given candidate and other neccesary information (that's what the maps
 ;;; are for). The ballot is regularly laid out (with no noise), with candidates and parties and buttons sharing the same y value.
 ;;; Plus colors!
-;;;
-;;; To make the background box work, put the image .gif file into actr7/Environment/GUI/images
-;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;; This first section of code defines the list of races: their names, candidates, and parties, and are used in the second section to construction
 ;; the ballot
@@ -56,14 +45,15 @@
 
 ; A single race
 (defclass contest ()
-  ((office-name :accessor office-name :initarg :office-name :initform nil)
-
+  (
+   (office-name :accessor office-name :initarg :office-name :initform nil)
    (cand-lst :accessor cand-lst :initarg :cand-lst :initform nil)
    (selection :accessor selection :initarg :selection :initform nil)
    (office-field :accessor office-field :initarg :office-field)
 	)
   )
-  
+
+ 
 
 ; A single candidate  
 (defclass cand-choice ()
@@ -73,6 +63,7 @@
    (parent :accessor parent :initarg :parent :initform nil)
    (my-idx :accessor my-idx :initarg :my-idx :initform nil)
    ))
+
 
 ; The contest list
 (setf cntst-lst
@@ -89,6 +80,7 @@
 		  (make-instance 'cand-choice
 			:cand-name "JanetteFroman" :party-name "LIB")))
 	   
+
 	   (make-instance 'contest
 		 :office-name "UnitedStatesSenator"
 		 :cand-lst
@@ -99,7 +91,8 @@
 			:cand-name "FernBrzezinski" :party-name "DEM")
 		  (make-instance 'cand-choice
 			:cand-name "CoreyDery" :party-name "IND")))
-	   
+
+
 	   (make-instance 'contest
 		 :office-name "UnitedStatesRepresentativeDistrict7"
 		 :cand-lst
@@ -109,25 +102,37 @@
 		  (make-instance 'cand-choice
 			:cand-name "RobertMettler" :party-name "DEM")))
 
-	   (make-instance 'contest
-		 :office-name "Governor"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "GlenTravisLozier" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RickStickles" :party-name "DEM")
-		  (make-instance 'cand-choice
-			:cand-name "MauriceHumble" :party-name "IND")))
+; Wisconsin Error Expected Here
 
 	   (make-instance 'contest
-		 :office-name "LieutenantGovernor"
+		 :office-name "GovernorLieutenantGovernor"
 		 :cand-lst
 		 (list
 		  (make-instance 'cand-choice
-			:cand-name "ShaneTerrio" :party-name "REP")
+			:cand-name "JimDoyle" :party-name "DEM")
 		  (make-instance 'cand-choice
-			:cand-name "CassiePrincipe" :party-name "DEM")))
+			:cand-name "ScottMcCallum" :party-name "REP")
+                  (make-instance 'cand-choice
+			:cand-name "JimYoung" :party-name "WIS")
+                  (make-instance 'cand-choice
+			:cand-name "EdThompson" :party-name "LIB")
+                  (make-instance 'cand-choice
+			:cand-name "AlanDEisenberg" :party-name "REF")))
+
+
+(make-instance 'contest
+		 :office-name "GovernorLieutenantGovernor"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "TyABollerud" :party-name "IND")
+		  (make-instance 'cand-choice
+			:cand-name "MikeMangan" :party-name "GUE")
+                  (make-instance 'cand-choice
+			:cand-name "AnebJahRasta" :party-name "RAS")))
+
+; Winsconsin Eror End
+
 
 	   (make-instance 'contest
 		 :office-name "AttorneyGeneral"
@@ -148,7 +153,7 @@
 		  (make-instance 'cand-choice
 			:cand-name "GregConverse" :party-name "DEM")))
 
-	   
+
 	   (make-instance 'contest
 		 :office-name "CommissionerofGeneralLandOffice"
 		 :cand-lst
@@ -168,7 +173,8 @@
 		  (make-instance 'cand-choice
 			:cand-name "RobertoAron" :party-name "DEM")))
 
-	   
+
+
 	   (make-instance 'contest
 		 :office-name "RailroadCommissioner"
 		 :cand-lst
@@ -198,7 +204,7 @@
 		  (make-instance 'cand-choice
 			:cand-name "SusanneRael" :party-name "DEM")))
 
-	   
+
 	   (make-instance 'contest
 		 :office-name "MemberStateBoardofEducationDistrict2"
 		 :cand-lst
@@ -217,87 +223,21 @@
 			:cand-name "TimGrasty" :party-name "DEM")))
 
 	   
-	   (make-instance 'contest
-		 :office-name "PresidingJudgeCourtofCriminalAppeals"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DanPlouffe" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "DerrickMelgar" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "DistrictAttorney"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "CoreyBehnke" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "JenniferALundeed" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CountyTreasurer"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DeanCaffee" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "GordonKallas" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "Sheriff"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "StanleySaari" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "JasonValle" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CountyTaxAssessor"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "HowardGrady" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RandyHClemons" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "JusticeofthePeace"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DeborahKamps" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "ClydeGaytonJr" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CountyJudge"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DanAtchley" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "LewisShine" :party-name "DEM")))
 	))
 
-
-;; Gets a random number between 1 and n
-(defun rand (n)
-	(- (random (1+ (* 2 n))) n))
 
 ;; A ballot function that gets called by combine.lisp and that runs the model (or a human) on the constructed ballot
 ;; realtime is a boolean that specifies whether to run thge model in real time or not (only pertanent if use-model is true)
 ;; use-model is a boolean that specifies whether to use the model or allow just human interaction with the ballot
 ;; visible is a boolean that specifies whether the ballot window should be made visible or not
-(defun vote (realtime use-model visible dolog)
-
+(defun vote (realtime use-model visible dolog &optional (contest-parameters '(35 35 18)))
+;(25 35 20)
+;(10 20 16)
+	;; Logging
+	(defparameter race-sizes '())
+	(defparameter race-sizes-column '())
+	(defparameter race-indexes-voted-on '())
+	(defparameter race-parameters contest-parameters)
   
 	; Resets the act r enviroment
 	(reset)
@@ -305,57 +245,60 @@
   
 	; Constructs the window and populates it with race-titles, candidates, parties, and buttons
 	(let* (
-		(window (open-exp-window "Ballot" :x 50 :y 50 :width 900 :height 700 :visible visible)) 
-		(starting-x 10) 
-		(i 0) ; column number
-		(j 0) ; row number
 		
+		(y-spacing-between-races (nth 0 contest-parameters))
+		(y-spacing-after-title (nth 1 contest-parameters))
+		(y-spacing-between-candidates (nth 2 contest-parameters))
+
+ 		(wheight 600)
+		(wwidth 750)
+                (window (open-exp-window "WisconsinBallot" :x 50 :y 50 :width 830 :height 590 :visible visible)) 
+                (starting-x 10) 		
+                (starting-y 20)
+		(current-x starting-x) 
+		(current-y starting-y)
+               	(x-offset-button 0)
+		(x-offset-candidate 30)
+		(x-offset-party 180)
+                (column-width 275)
+
+
 		; Maps the buttons to various objects so that these values can be accessed in the click response method, where we only have accessed
 		; to the object itself
 		(button-map (make-hash-table)) ; Maps the buttons to the array of candidate and party objects on screen (to use to change their color to blue)
 		(button-state (make-hash-table)) ; Maps the buttons to their state (to know whether to set to blue or black)
 		(button-index (make-hash-table)) ; Maps the button to their race's index in cntst-lst 
 		(button-candidate (make-hash-table)) ; Maps the button to their associated candidate object from cntst-lst
-		(button-race (make-hash-table))  ; Maps the button to their race index
-
-		 ; Holdovers from constructing a ballot with noise. Can make a new ballot with the values increased to get a ballot with noise
-		(noise 0)
-		(noise_macro 0))
-		
+	        (button-race (make-hash-table))) ; Maps the button to their race index		
+	
 	
 		; Places all of the races on the screen
+                ; Column loop
 		(loop
-	
-			(setf j 0) ; row reset to 0
-			(setf starting-x (+ (* i 300) 10)) ; starting-x incremented (because it is a new column)
-		
+                        (setf current-column-sizes '())
 			
+			; Item low
 			(loop 	
-				
 				
 				; Constructs the ballot
 				(let* (
-
-					; starting-y incremented (because it is a new row within the column)
-					(starting-y (+ (* j 85) 10))
-
-					; Again, a holdover. Randomx = startingx here
-					(randomx (+ starting-x (rand noise_macro)))
-					(randomy (+ starting-y (rand noise_macro)))
-				
 				
 					; initialization to build the race
-					(candidate-party-object-array (make-array '(6)))
+					(candidate-party-object-array (make-array '(10)))
 					(contest (pop cntst-lst))
 					(candidates (cand-lst contest))
 					(candidate (pop candidates))
-					(y-offset 20)
 					(index 0)
 					(button_temp nil))					
 
-					;add background boxes
-					 ;; explicitly add instances of the new item to that window
-                                        (add-image-to-exp-window window "box" "lb.gif" :x (- randomx 5) :y (- randomy 5) :width 280 :height 75)
+					; Log creation of race
+					(setf race-sizes (append race-sizes (list (+ (list-length candidates) 1))))
+					(setf current-column-sizes (append current-column-sizes (list (+ (list-length candidates) 1))))
+
+                                       ;add background boxes
+                                         ;; explicitly add instances of the new item to that window
+                                         (add-image-to-exp-window window "box" "lb.gif" :x (- current-x 5) :y (- current-y 5) :width 250 :height (+ y-spacing-after-title (* (- (list-length candidates) 1) y-spacing-between-candidates) (* (list-length (list (+ (list-length candidates) 1))) 14) 35))
+                                        ;(add-items-to-exp-window 
    
                                          ;; here we create our new items assuming that the corresponding files
                                          ;; are available if we intend to have them shown in a visible window.
@@ -364,71 +307,75 @@
                                          
                                          ;; The first one does not provide an action function and thus the default
                                          ;; action of printing the info when :vwt is true will be used.
-   
-                                        ;(make-instance 'image-vdi :file "lb.gif" :dialog-item-text "box" :x-pos (- randomx 5) :y-pos (- randomy 5) :width 280 :height 75))
+  
+                                        ;(make-instance 'image-vdi :file "lb.gif" :dialog-item-text "box" :x-pos (- current-x 5) :y-pos (- current-y 5) :width 250 :height (+ y-spacing-after-title (* (- (list-length candidates) 1) y-spacing-between-candidates) (* (list-length (list (+ (list-length candidates) 1))) 14) 35) ) )
+
+
 
 					; Adds the race name
-					(add-text-to-exp-window window (office-name contest) :color 'red :x randomx :y randomy)
-
+					(add-text-to-exp-window window (office-name contest) :color 'red :x current-x :y current-y)
+                                        (setf current-y (+ current-y y-spacing-after-title))
 				
 					; Constructs the rest of the ballot
 					(loop while candidate 
 			
-					do 	(progn 
+		
+					  do 	(progn 
 						
 						; Displays and stores candidates
-						(setf (aref candidate-party-object-array index) (add-text-to-exp-window window (cand-name candidate) :color 'purple :x (+ randomx 30 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
+						(setf (aref candidate-party-object-array index) (add-text-to-exp-window window (cand-name candidate) :color 'purple :x (+ x-offset-candidate current-x) :y current-y))
 						
 						; Displays and stores parties
-						(setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window window (party-name candidate) :color 'blue :x (+ randomx 200 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
+						(setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window window (party-name candidate) :color 'blue :x (+ x-offset-party current-x) :y current-y))
 
 						; Displays and stores buttons
-						(setf button_temp (add-button-to-exp-window window :color 'white :text "" :x randomx :y (+ randomy y-offset 2) :width 20 :height 10 :action 
+						(setf button_temp (add-button-to-exp-window window :color 'white :text "" :x current-x :y (+ current-y 1) :width 20 :height 10 :action 
 						(lambda (button)
 						(if (= (gethash button button-state) 0) 
 							(progn
 								(modify-button-for-exp-window button :color 'black)
-                                                                (proc-display)
-								; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'purple)
-								; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'purple)
-								; (log-candidate (cand-name (gethash button button-candidate)) (gethash button button-index)) 
-								(setf (gethash button button-state) 1))
+								(proc-display)
+                                                                ;(log-candidate (cand-name (gethash button button-candidate)) (gethash button button-index))
+								(setf (gethash button button-state) 1)
+								(setf race-indexes-voted-on (append race-indexes-voted-on (list (gethash button button-race))))
+                                                        )
 							(progn
 								(modify-button-for-exp-window button :color 'white)
-                                                                (proc-display)
-								; (modify-text-for-exp-window (aref (gethash button button-map) (gethash button button-index)) :color 'black)
-								; (modify-text-for-exp-window (aref (gethash button button-map) (+ (gethash button button-index) 3)) :color 'blue)
-								;(unlog-candidate (gethash button button-candidate)) 
-								(setf (gethash button button-state) 0))))))	
+								(proc-display)
+								(setf (gethash button button-state) 0)))))
+                                                        )	
 
 						; Button information, stored in hashmaps
 						(setf (gethash button_temp button-map) candidate-party-object-array)
 						(setf (gethash button_temp button-state) 0)
 						(setf (gethash button_temp button-index) index)
 						(setf (gethash button_temp button-candidate) candidate)
-                        ;(setf (gethash button_temp button-race) (- (length race-sizes) 1))
+						(setf (gethash button_temp button-race) (- (length race-sizes) 1))
 
 						
 						; Loop increment operations
-						(setf y-offset (+ y-offset 15))
+                                                (setf current-y (+ current-y y-spacing-between-candidates))
 						(setf candidate (pop candidates))
-						(setf index (+ index 1)))))
+						(setf index (+ index 1)))
+                                          ))
 			
-				(setq j (+ j 1))
-			
-				(when (> j 7) (return j)) ; more than 7 rows, break the loop
-				
-				(when (not cntst-lst) (return j)) ;checks if we've run out of races
-		
+				(when (not cntst-lst) (return)) ;checks if we've run out of races
+
+				(setf current-y (+ current-y y-spacing-between-races))
+				(setf next-cntst (car cntst-lst))
+				(when (> 
+					(+ current-y y-spacing-after-title (* (length (cand-lst next-cntst)) y-spacing-between-candidates)) 
+					wheight)
+					(return)) ; y too big
+					
 			)
 		
-		(setq i (+ i 1))
-				
-		(when (> i 2) (return i)) ; more than 3 column, break the loop
-		
-		(when (not cntst-lst) (return i)) ;checks if we've run out of races
-
-				
+		; More logging
+                (setf race-sizes-column (append race-sizes-column (list current-column-sizes)))
+		(setf current-x (+ current-x column-width))
+		(setf current-y	starting-y)				
+		(when (not cntst-lst) (return)) ;checks if we've run out of races
+		(when (> current-x wwidth) (return)) ;checks if we've run out of left right room
 		
 	
 	)
@@ -446,3 +393,5 @@
 		;(if dolog (log-ballot))
 		))
 ))
+
+

@@ -27,7 +27,8 @@
 (run-single '("NLC-Offset-Random-Box-New" nil nil nil nil nil) nil nil t)
 
 ;; wisconsin ballot
-(run-single '("WisconsinBallot-Box" nil nil nil nil nil) nil nil t)
+;(run-single '("WisconsinBallot-Box" nil nil nil nil nil) nil nil t)
+(run-single '("WisconsinBallot-Box-New" nil nil nil nil nil) nil nil t)
 
 
 ;; ------------------------------------- test a single model -------------------------------------
