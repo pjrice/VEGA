@@ -522,7 +522,9 @@ def proc_display_monitor(cmd,params,success,results):
         # add the group label associated with each feature in the visicon to
         # feature's chunk representation by adding a slot named "group" with
         # a value set to the label
-        #actr.set_chunk_slot_value(chunk-name, "group", new-value)
+        for visPoint in vgScene.visPoints:
+            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
+        
         
         # display boxes around the visicon content
         
