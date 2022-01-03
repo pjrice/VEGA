@@ -505,6 +505,9 @@ def proc_display_monitor(cmd,params,success,results):
     
     try:
         
+        # ensure that "group" is a valid slot name
+        actr.extend_possible_slots("group", warn=False)
+        
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
         vgScene = visGroups(currentVisicon,8,'box')
@@ -514,8 +517,12 @@ def proc_display_monitor(cmd,params,success,results):
         # the ACT-R chunk representation of a given feature is modified so that 
         # a "group" slot is added with a value set to the generated group label
         # inherit labels from vgPrevScene if possible
-        label_groups(vgScene,vgPrevScene)
+        #label_groups(vgScene,vgPrevScene)
         
+        # add the group label associated with each feature in the visicon to
+        # feature's chunk representation by adding a slot named "group" with
+        # a value set to the label
+        #actr.set_chunk_slot_value(chunk-name, "group", new-value)
         
         # display boxes around the visicon content
         
