@@ -233,6 +233,7 @@ class visPoint:
         self.visiconID = visiconFeature[0]
         self.checked = False
         self.groupIdx = None
+        self.groupName = None
         self.parse_feature(visiconFeature)
         
     def parse_feature(self,attrList):
@@ -365,14 +366,18 @@ def determine_naming_type(namingType,n):
     func = switcher.get(namingType, lambda: "Invalid naming type")
     return(func(n))
 
-def gen_n_syms(n):
-    pass
     
 
 def label_groups(groupedScene,prevGroupedScene=None):
     
     if prevGroupedScene is None:
-        groupedScene.groupNames = gen_n_syms(groupedScene.groupCount)
+        groupedScene.groupNames = actr.current_connection.evaluate("gen-n-syms",groupedScene.groupCount)[0]
+        for visPoint in groupedScene.visPoints:
+            visPoint.groupName = groupedScene.groupNames[visPoint.groupIdx]
+    else:
+        #inherit_group_labels()
+        pass
+            
 
             
         
@@ -517,13 +522,14 @@ def proc_display_monitor(cmd,params,success,results):
         # the ACT-R chunk representation of a given feature is modified so that 
         # a "group" slot is added with a value set to the generated group label
         # inherit labels from vgPrevScene if possible
-        #label_groups(vgScene,vgPrevScene)
+        label_groups(vgScene,vgPrevScene)
         
         # add the group label associated with each feature in the visicon to
         # feature's chunk representation by adding a slot named "group" with
         # a value set to the label
         for visPoint in vgScene.visPoints:
-            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
+            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
+            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
         
         
         # display boxes around the visicon content

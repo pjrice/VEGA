@@ -41,6 +41,40 @@
 ; Base folder name (need to set)
 (defparameter base-file-name "/home/ausmanpa/gp/VEGA/")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; new-name seems to be an act-r function; do we still want to use this?
+
+;(defparameter vg-naming-type 'generic)
+
+;(defun gen-n-syms (n)
+;  (case vg-naming-type
+;    (sequential
+;      (loop for i from 1 to n
+;        append (list (new-name "group")) into gps
+;        finally (return gps)
+;      )
+;    )
+;    (generic
+;      (loop for i from 1 to n
+;        append (list (gensym)) into gps
+;        finally (return gps)
+;      )
+;    )
+;  )
+;)
+
+(defun gen-n-syms (n)
+    (loop for i from 1 to n
+        append (list (gensym)) into gps
+        finally (return gps)
+    )
+)
+
+(add-act-r-command "gen-n-syms" 'gen-n-syms)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;; Utility function that should not be called externally
 ;; Creates a new model in the output file location with the given file names for each piece of the model and then loads this file name
