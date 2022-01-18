@@ -32,7 +32,6 @@
 ###             : - wrap this in an actr module, as suggested by Dan. He has
 ###                 some comments on this in his modvis.py example
 ###             : - implement 3d collision? (ie, 3d euclidian distance)
-###             : - extend-possible-slots has to be called
 ###             : - the attribute error that occurs if 3d collision is used
 ###                 without screen-z being defined is silent
 ###             : - presumably, the same with the attribute error that would be
@@ -47,6 +46,7 @@
 import math
 import actr
 import warnings
+import numpy as np
 
 ##############################################################################
 # collision methods
@@ -352,21 +352,7 @@ class visGroups:
                         
                 
 ##############################################################################
-# Group labeling utilities
-
-def generic_naming(n):
-    pass
-
-def determine_naming_type(namingType,n):
-    switcher = {
-        'generic':generic_naming,
-        'sequential':sequential_naming
-        }
-    
-    func = switcher.get(namingType, lambda: "Invalid naming type")
-    return(func(n))
-
-    
+# Group labeling utilities    
 
 def label_groups(groupedScene,prevGroupedScene=None):
     
@@ -375,15 +361,64 @@ def label_groups(groupedScene,prevGroupedScene=None):
         for visPoint in groupedScene.visPoints:
             visPoint.groupName = groupedScene.groupNames[visPoint.groupIdx]
     else:
-        #inherit_group_labels()
-        pass
-            
+        inherit_group_labels(groupedScene,prevGroupedScene)
+    
 
+def inherit_group_labels(groupedScene,prevGroupedScene):
+    
+    # warn if the collision method used for the two scenes is not the same
+    if groupedScene.glomType != prevGroupedScene.glomType:
+        warnings.warn("Warning...somehow the collision method used for the previous scene is not the same as the collision method used for the current scene.\nUsing the current scene's collision method for group inheritance.")
+      
+    # warn if the glomming radius used for the two scenes is not the same
+    if groupedScene.glomRadius != prevGroupedScene.glomRadius:
+        warnings.warn("Warning...the glomming radius used for the previous scene is not the same as the glomming radius used for the current scene.\nUsing the current scene's glomming radius for group inheritance.")
+    
+    # initialize collisions table as 2d array 
+    # rows index groups of the current scene
+    # columns index groups of the previous scene
+    collisions = np.zeros(shape=(groupedScene.groupCount,prevGroupedScene.groupCount),dtype=int)
+    
+    # initialize an empty list to store the new names in 
+    newNames = []
+    
+    # determine whether each of the points between the new and old scenes collide, according to 
+    # the new scene's collision method and glomming radius
+    # if two points do, increment the collisions element that corresponds to the groups that the 
+    # new and old points belong to
+    for newPoint in groupedScene.visPoints:
+        for oldPoint in prevGroupedScene.visPoints:
+            argDict = {'point1':newPoint,
+                       'point2':oldPoint,
+                       'radius':groupedScene.glomRadius,
+                       'useZ':False}
             
+            if determine_pt2pt_collision(groupedScene.glomType,argDict):
+                collisions[newPoint.groupIdx,oldPoint.groupIdx] += 1
+                
+    for newGrpIdx in range(0,groupedScene.groupCount):
+        numNewHits = np.sum(collisions[newGrpIdx,:])
+        inheritedName = None
         
-        
+        for oldGrpIdx in range(0,prevGroupedScene.groupCount):
+            if inheritedName is None:
+                numOldHits = np.sum(collisions[:,oldGrpIdx])
+                numPtHits = collisions[newGrpIdx,oldGrpIdx]
+                
+                if (numOldHits==1 and numNewHits==1 and numPtHits > 0):
+                    inheritedName = prevGroupedScene.groupNames[oldGroupIdx]
+                    
+        if inheritedName is not None:
+            newNames.append(inheritedName)
+        else:
+            newNames.append(actr.current_connection.evaluate("gen-n-syms",1)[0][0])
             
-
+    # set the inherited and newly determined names as group names for the current scene
+    groupedScene.groupNames = newNames
+    for visPoint in groupedScene.visPoints:
+            visPoint.groupName = groupedScene.groupNames[visPoint.groupIdx]
+    
+            
 
 ##############################################################################
 # ACT-R monitors
@@ -547,6 +582,9 @@ def proc_display_monitor(cmd,params,success,results):
     
 actr.add_command("pd-mon",proc_display_monitor)
 actr.current_connection.interface.send("monitor","proc-display","pd-mon","before")
+
+
+##############################################################################
 
 
 def test():
