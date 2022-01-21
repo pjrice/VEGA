@@ -352,7 +352,7 @@ class visGroups:
                         
                 
 ##############################################################################
-# Group labeling utilities    
+# Visicon chunk labeling utilities    
 
 def label_groups(groupedScene,prevGroupedScene=None):
     
@@ -417,6 +417,27 @@ def inherit_group_labels(groupedScene,prevGroupedScene):
     groupedScene.groupNames = newNames
     for visPoint in groupedScene.visPoints:
             visPoint.groupName = groupedScene.groupNames[visPoint.groupIdx]
+            
+def compute_boundary(visiconPoint,boundary):
+    
+    if boundary == "left":
+        pointWidth = getattr(visiconPoint,"WIDTH")
+        pointX = getattr(visiconPoint,"SCREEN-X")
+        boundVal = ((pointX - (pointWidth/2))//2)*2
+    elif boundary == "right":
+        pointWidth = getattr(visiconPoint,"WIDTH")
+        pointX = getattr(visiconPoint,"SCREEN-X")
+        boundVal = ((pointX + (pointWidth/2))//2)*2
+    elif boundary == "top":
+        pointHeight = getattr(visiconPoint,"HEIGHT")
+        pointY = getattr(visiconPoint,"SCREEN-Y")
+        boundVal = ((pointY - (pointHeight/2))//2)*2
+    elif boundary == "bottom":
+        pointHeight = getattr(visiconPoint,"HEIGHT")
+        pointY = getattr(visiconPoint,"SCREEN-Y")
+        boundVal = ((pointY + (pointHeight/2))//2)*2
+        
+    return boundVal
     
             
 
@@ -545,8 +566,14 @@ def proc_display_monitor(cmd,params,success,results):
     
     try:
         
-        # ensure that "group" is a valid slot name
+        # ensure that "group" is a valid slot name for visicon chunks
         actr.extend_possible_slots("group", warn=False)
+        
+        # also have to extend visicon chunk slots with left/right/top/bottom entries
+        actr.extend_possible_slots("screen-left",warn=False)
+        actr.extend_possible_slots("screen-right",warn=False)
+        actr.extend_possible_slots("screen-top",warn=False)
+        actr.extend_possible_slots("screen-bottom",warn=False)
         
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
@@ -565,6 +592,10 @@ def proc_display_monitor(cmd,params,success,results):
         for visPoint in vgScene.visPoints:
             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
             actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+            actr.set_chunk_slot_value(visPoint.visiconID,"screen-left",compute_boundary(visPoint,"left"))
+            actr.set_chunk_slot_value(visPoint.visiconID,"screen-right",compute_boundary(visPoint,"right"))
+            actr.set_chunk_slot_value(visPoint.visiconID,"screen-top",compute_boundary(visPoint,"top"))
+            actr.set_chunk_slot_value(visPoint.visiconID,"screen-bottom",compute_boundary(visPoint,"bottom"))
         
         
         # display boxes around the visicon content
