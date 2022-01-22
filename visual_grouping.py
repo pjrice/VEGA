@@ -537,6 +537,10 @@ def features_added(cmd,params,success,results):
     boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
     
     #modify the visicon entry for this feature with the computed boundaries
+    #actr.set_chunk_slot_value(results[0][0],"screen-left",boundaries["SCREEN-LEFT"])
+    #actr.set_chunk_slot_value(results[0][0],"screen-right",boundaries["SCREEN-RIGHT"])
+    #actr.set_chunk_slot_value(results[0][0],"screen-top",boundaries["SCREEN-TOP"])
+    #actr.set_chunk_slot_value(results[0][0],"screen-bottom",boundaries["SCREEN-BOTTOM"])
     actr.modify_visicon_features([results[0][0],"screen-left",boundaries["SCREEN-LEFT"],
                                              "screen-right",boundaries["SCREEN-RIGHT"],
                                              "screen-top",boundaries["SCREEN-TOP"],
@@ -634,8 +638,8 @@ def proc_display_monitor(cmd,params,success,results):
         # a value set to the label
         for visPoint in vgScene.visPoints:
             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-            actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
+            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+            #actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
         
         # display boxes around the visicon content
         
