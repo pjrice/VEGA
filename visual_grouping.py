@@ -431,18 +431,36 @@ def compute_boundary(visiconPoint,boundary):
     elif boundary == "top":
         pointHeight = getattr(visiconPoint,"HEIGHT")
         pointY = getattr(visiconPoint,"SCREEN-Y")
-        boundVal = ((pointY - (pointHeight/2))//2)*2
+        boundVal = ((pointY - (pointHeight/2))//2)*2 #should probably be +
     elif boundary == "bottom":
         pointHeight = getattr(visiconPoint,"HEIGHT")
         pointY = getattr(visiconPoint,"SCREEN-Y")
-        boundVal = ((pointY + (pointHeight/2))//2)*2
+        boundVal = ((pointY + (pointHeight/2))//2)*2 #should probably be -
         
     return boundVal
+
+def compute_boundaries(screenX,screenY,height,width):
     
-            
+    boundDict = {}
+    
+    boundDict["SCREEN-LEFT"] = int(((screenX - (width/2))//2)*2)
+    boundDict["SCREEN-RIGHT"] = int(((screenX + (width/2))//2)*2)
+    boundDict["SCREEN-TOP"] = int(((screenY - (height/2))//2)*2) #should probably be +
+    boundDict["SCREEN-BOTTOM"] = int(((screenY + (height/2))//2)*2) #should probably be -
+
+    return boundDict           
 
 ##############################################################################
-# ACT-R monitors
+# ACT-R interfacing
+
+# ensure that "group" is a valid slot name for visicon chunks
+actr.extend_possible_slots("group", warn=False)
+        
+# also have to extend visicon chunk slots with left/right/top/bottom entries
+actr.extend_possible_slots("screen-left",warn=False)
+actr.extend_possible_slots("screen-right",warn=False)
+actr.extend_possible_slots("screen-top",warn=False)
+actr.extend_possible_slots("screen-bottom",warn=False)
 
 
 # keeping a global list of feature ids and assuming there's only one model for 
@@ -503,11 +521,36 @@ def features_added(cmd,params,success,results):
     global vgScene
     global vgPrevScene
     
+    
+    screenXVal = params[0][params[0].index('SCREEN-X') + 1]
+    screenYVal = params[0][params[0].index('SCREEN-Y') + 1]
+    
+    # height/width may not be defined in the (add-visicon-features) call
+    if ('HEIGHT' in params[0]) and ('WIDTH' in params[0]):
+        heightVal = params[0][params[0].index('HEIGHT') + 1]
+        widthVal = params[0][params[0].index('WIDTH') + 1]
+    else:
+        heightVal = 1
+        widthVal = 1
+    
+    #compute the left/right/top/bottom boundaries that are used by the models
+    boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
+    
+    #modify the visicon entry for this feature with the computed boundaries
+    actr.modify_visicon_features([results[0][0],"screen-left",boundaries["SCREEN-LEFT"],
+                                             "screen-right",boundaries["SCREEN-RIGHT"],
+                                             "screen-top",boundaries["SCREEN-TOP"],
+                                             "screen-bottom",boundaries["SCREEN-BOTTOM"]])
+    
     # Just store the ids in the list
     features = features + results[0]
     
     # insert the feature ID into the feature's details 
     [j.insert(0,i) for i,j in zip(results[0],params)]
+    
+    # update the params list with the calculated boundaries
+    boundsList = [val for pair in zip(boundaries.keys(),boundaries.values()) for val in pair]
+    params[0] = params[0]+boundsList
     
     currentVisicon = currentVisicon + params
     
@@ -567,13 +610,13 @@ def proc_display_monitor(cmd,params,success,results):
     try:
         
         # ensure that "group" is a valid slot name for visicon chunks
-        actr.extend_possible_slots("group", warn=False)
+        #actr.extend_possible_slots("group", warn=False)
         
         # also have to extend visicon chunk slots with left/right/top/bottom entries
-        actr.extend_possible_slots("screen-left",warn=False)
-        actr.extend_possible_slots("screen-right",warn=False)
-        actr.extend_possible_slots("screen-top",warn=False)
-        actr.extend_possible_slots("screen-bottom",warn=False)
+        #actr.extend_possible_slots("screen-left",warn=False)
+        #actr.extend_possible_slots("screen-right",warn=False)
+        #actr.extend_possible_slots("screen-top",warn=False)
+        #actr.extend_possible_slots("screen-bottom",warn=False)
         
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
@@ -591,12 +634,8 @@ def proc_display_monitor(cmd,params,success,results):
         # a value set to the label
         for visPoint in vgScene.visPoints:
             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-            actr.set_chunk_slot_value(visPoint.visiconID,"screen-left",compute_boundary(visPoint,"left"))
-            actr.set_chunk_slot_value(visPoint.visiconID,"screen-right",compute_boundary(visPoint,"right"))
-            actr.set_chunk_slot_value(visPoint.visiconID,"screen-top",compute_boundary(visPoint,"top"))
-            actr.set_chunk_slot_value(visPoint.visiconID,"screen-bottom",compute_boundary(visPoint,"bottom"))
-        
+            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+            actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
         
         # display boxes around the visicon content
         
