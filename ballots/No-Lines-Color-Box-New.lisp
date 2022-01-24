@@ -300,7 +300,7 @@
 
   
 	; Resets the act r enviroment
-	(reset)
+	;(reset)
   
   
 	; Constructs the window and populates it with race-titles, candidates, parties, and buttons
@@ -442,7 +442,7 @@
 		(install-device window)
 		(proc-display)
 		(start-hand-at-mouse)
-		(if realtime (run 200 t) (run 200))
+		;(if realtime (run 200 t) (run 200))
 		;(if dolog (log-ballot))
 		))
 ))

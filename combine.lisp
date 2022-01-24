@@ -159,7 +159,7 @@
 (defun run-single (file-names realtime use-model visible)
 
 	(create-specific file-names)
-	(vote realtime use-model visible t)
+	;(vote realtime use-model visible t)
 
 )
 
