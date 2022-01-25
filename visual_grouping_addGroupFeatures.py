@@ -266,11 +266,18 @@ class visPoint:
              
 
 class visGroups:
-    def __init__(self, currentVisicon, glomRadius, glomType):
-        self.visFeats = currentVisicon
+    def __init__(self, currVisicon, glomRadius, glomType):
+        self.visFeats = currVisicon
         self.glomRadius = glomRadius
         self.glomType = glomType
-        self.visPoints = None
+        self.visPoints = []
+        self.groupCount = 0
+        self.prevGroupCount = 0
+        self.groupNames = []
+        self.groupIdxs = []
+        self.metaGrouped = False
+        self.groupGroupingIters = 0
+        
         
         # using the maintained currentVisicon, create a set of visPoint objects
         # self.visPoints will be populated with the result
@@ -280,23 +287,22 @@ class visGroups:
         # using the info in self.visPoints, perform the grouping here
         if self.glomRadius:
             self.glom_groups(self.glomRadius)
+            self.label_groups()
+            self.group_groups()
         
     def build_from_visicon(self):
-        visPointList = []
         for feat in self.visFeats:
-            visPointList.append(visPoint(feat))
+            self.visPoints.append(visPoint(feat))
             
-        self.visPoints = visPointList
+    def build_from_featureList(self,featList):
+        for feat in featList:
+            self.visPoints.append(visPoint(feat))
         
     def glom_groups(self,radius):
         
-        self.groupCount = 0
-        self.groupNames = []
-        self.groupIdxs = []
-        
         for pt in self.visPoints:
             
-            if not pt.checked:
+            if not pt.checked and pt.groupIdx is None:
                 self.groupIdxs.append(self.groupCount)
                 pt.checked = True
                 pt.groupIdx = self.groupCount
@@ -304,7 +310,7 @@ class visGroups:
                 hits = []
                 
                 for target in self.visPoints:
-                    if not target.checked:
+                    if not target.checked and target.groupIdx is None:
                         
                         argDict = {'point1':pt,
                                    'point2':target,
@@ -324,14 +330,14 @@ class visGroups:
     def glom_groups_grow(self,radius,pts2check,groupIdx):
         
         for pt in pts2check:
-            if not pt.checked:
+            if not pt.checked and pt.groupIdx is None:
                 pt.checked = True
                 pt.groupIdx = groupIdx
                 
                 hits = []
                 
                 for target in self.visPoints:
-                    if not target.checked:
+                    if not target.checked and target.groupIdx is None:
                         
                         argDict = {'point1':pt,
                                    'point2':target,
@@ -344,9 +350,94 @@ class visGroups:
                 if len(hits) > 0:
                     self.glom_groups_grow(radius,hits,groupIdx)
                     
+    
+    def group_groups(self):
+        
+        radiusMod = 2
+        
+        while not self.metaGrouped:
+            
+            self.groupGroupingIters += 1
+        
+            self.make_group_features()
+                    
+            # determine the features that were just added with make_group_features()
+            groupFeats = [feat for feat in currentVisicon if feat not in self.visFeats]
+        
+            # add the group features to the list of visual features
+            self.visFeats.extend(groupFeats)
+                        
+            # convert the group features to visPoint objects and add them to the visPoint list    
+            self.build_from_featureList(groupFeats)
+                        
+            self.prevGroupCount = self.groupCount
+                
+            self.glom_groups(self.glomRadius*radiusMod)
+                        
+            self.label_groups()
+                        
+            radiusMod = radiusMod*2
+            
+            if (self.groupCount - self.prevGroupCount)==1:
+                self.metaGrouped = True
+        
+        
+        
+        
+    
+    def make_group_features(self):
+                
+        #groupFeatureIds = []
+        
+        for groupIdx in self.groupIdxs[self.prevGroupCount:]:
+            
+            groupXs = []
+            groupYs = []
+            groupSLefts = []
+            groupSRights = []
+            groupSTops = []
+            groupSBottoms = []
+            
+            for visPoint in self.visPoints:
+                if visPoint.groupIdx == groupIdx:
+                    groupXs.append(getattr(visPoint,'SCREEN-X'))
+                    groupYs.append(getattr(visPoint,'SCREEN-Y'))
+                    groupSLefts.append(getattr(visPoint,'SCREEN-LEFT'))
+                    groupSRights.append(getattr(visPoint,'SCREEN-RIGHT'))
+                    groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
+                    groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
+            
+            groupMeanX = int(np.mean(groupXs))
+            groupMeanY = int(np.mean(groupYs))
+            
+            groupLeft = np.min(groupSLefts)
+            groupRight = np.max(groupSRights)
+            groupTop = np.max(groupSTops)
+            groupBottom = np.min(groupSBottoms)
+            
+            groupHeight = int(groupTop - groupBottom)
+            groupWidth = int(groupRight - groupLeft)
+            
+            actr.add_visicon_features(['SCREEN-X',groupMeanX,
+                                        'SCREEN-Y',groupMeanY,
+                                        'HEIGHT',groupHeight,
+                                        'WIDTH',groupWidth,
+                                        'VALUE',self.groupNames[groupIdx]])
+            
+        
+    
     def reset_checked(self):
         for pt in self.visPoints:
             pt.checked = False
+            
+    def label_groups(self):
+        self.groupNames.extend(actr.current_connection.evaluate("gen-n-syms",self.groupCount-self.prevGroupCount)[0])
+        
+        for pt in self.visPoints:
+            if pt.groupName is None:
+                pt.groupName = self.groupNames[pt.groupIdx]
+                actr.set_chunk_slot_value(pt.visiconID,"GROUP",pt.groupName)
+        
         
                         
                         
@@ -541,10 +632,10 @@ def features_added(cmd,params,success,results):
     #actr.set_chunk_slot_value(results[0][0],"screen-right",boundaries["SCREEN-RIGHT"])
     #actr.set_chunk_slot_value(results[0][0],"screen-top",boundaries["SCREEN-TOP"])
     #actr.set_chunk_slot_value(results[0][0],"screen-bottom",boundaries["SCREEN-BOTTOM"])
-    actr.modify_visicon_features([results[0][0],"screen-left",boundaries["SCREEN-LEFT"],
-                                             "screen-right",boundaries["SCREEN-RIGHT"],
-                                             "screen-top",boundaries["SCREEN-TOP"],
-                                             "screen-bottom",boundaries["SCREEN-BOTTOM"]])
+    actr.modify_visicon_features([results[0][0],"SCREEN-LEFT",boundaries["SCREEN-LEFT"],
+                                             "SCREEN-RIGHT",boundaries["SCREEN-RIGHT"],
+                                             "SCREEN-TOP",boundaries["SCREEN-TOP"],
+                                             "SCREEN-BOTTOM",boundaries["SCREEN-BOTTOM"]])
     
     # Just store the ids in the list
     features = features + results[0]
@@ -613,70 +704,11 @@ def proc_display_monitor(cmd,params,success,results):
     
     try:
         
-        # ensure that "group" is a valid slot name for visicon chunks
-        #actr.extend_possible_slots("group", warn=False)
-        
-        # also have to extend visicon chunk slots with left/right/top/bottom entries
-        #actr.extend_possible_slots("screen-left",warn=False)
-        #actr.extend_possible_slots("screen-right",warn=False)
-        #actr.extend_possible_slots("screen-top",warn=False)
-        #actr.extend_possible_slots("screen-bottom",warn=False)
         
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
         vgScene = visGroups(currentVisicon,8,'box')
-        
-        # generate and apply labels for the newly determined groups
-        # label application first occurs in the python representation, and then
-        # the ACT-R chunk representation of a given feature is modified so that 
-        # a "group" slot is added with a value set to the generated group label
-        # inherit labels from vgPrevScene if possible
-        label_groups(vgScene,vgPrevScene)
-        
-        # add the group label associated with each feature in the visicon to
-        # feature's chunk representation by adding a slot named "group" with
-        # a value set to the label
-        for visPoint in vgScene.visPoints:
-            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-            #actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
-            
-        groupFeatureIds = []
-        
-        for groupIdx in vgScene.groupIdxs:
-            
-            groupXs = []
-            groupYs = []
-            groupSLefts = []
-            groupSRights = []
-            groupSTops = []
-            groupSBottoms = []
-            
-            for visPoint in vgScene.visPoints:
-                if visPoint.groupIdx == groupIdx:
-                    groupXs.append(getattr(visPoint,'SCREEN-X'))
-                    groupYs.append(getattr(visPoint,'SCREEN-Y'))
-                    groupSLefts.append(getattr(visPoint,'SCREEN-LEFT'))
-                    groupSRights.append(getattr(visPoint,'SCREEN-RIGHT'))
-                    groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
-                    groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
-            
-            groupMeanX = int(np.mean(groupXs))
-            groupMeanY = int(np.mean(groupYs))
-            
-            groupLeft = np.min(groupSLefts)
-            groupRight = np.max(groupSRights)
-            groupTop = np.max(groupSTops)
-            groupBottom = np.min(groupSBottoms)
-            
-            groupHeight = int(groupTop - groupBottom)
-            groupWidth = int(groupRight - groupLeft)
-            
-            idOfAddedGroupFeature = actr.add_visicon_features(['screen-x',groupMeanX,'screen-y',groupMeanY,'height',groupHeight,'width',groupWidth,'value',vgScene.groupNames[groupIdx]])
-            
-            groupFeatureIds.append(idOfAddedGroupFeature)
-            
-        
+         
         # display boxes around the visicon content
         
         
