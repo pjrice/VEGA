@@ -43,10 +43,29 @@
 ###             : First commit
 ##############################################################################
 
+import sys
+import time
 import math
-import actr
 import warnings
 import numpy as np
+
+sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+
+import actr
+
+##############################################################################
+# global variables
+
+# keeping a global list of feature ids and assuming there's only one model for 
+# now. Will wrap in actr module later to handle multiple models, etc
+
+features = [] # contains a list of visicon feature IDs
+currentVisicon = [] # contains a representation of the current visicon
+
+vgScene = None # the current visual scene, grouped
+vgPrevScene = None # the previous visual scene, grouped
+
+modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
 
 ##############################################################################
 # collision methods
@@ -463,14 +482,6 @@ actr.extend_possible_slots("screen-top",warn=False)
 actr.extend_possible_slots("screen-bottom",warn=False)
 
 
-# keeping a global list of feature ids and assuming there's only one model for 
-# now. Will wrap in actr module later to handle multiple models, etc
-features = []
-currentVisicon = []
-
-vgScene = None
-vgPrevScene = None
-
 
 # If the model is reset, clear the list of features
 def reset ():
@@ -520,7 +531,7 @@ def features_added(cmd,params,success,results):
     global currentVisicon
     global vgScene
     global vgPrevScene
-    
+    global modVisLock
     
     screenXVal = params[0][params[0].index('SCREEN-X') + 1]
     screenYVal = params[0][params[0].index('SCREEN-Y') + 1]
@@ -537,14 +548,12 @@ def features_added(cmd,params,success,results):
     boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
     
     #modify the visicon entry for this feature with the computed boundaries
-    #actr.set_chunk_slot_value(results[0][0],"screen-left",boundaries["SCREEN-LEFT"])
-    #actr.set_chunk_slot_value(results[0][0],"screen-right",boundaries["SCREEN-RIGHT"])
-    #actr.set_chunk_slot_value(results[0][0],"screen-top",boundaries["SCREEN-TOP"])
-    #actr.set_chunk_slot_value(results[0][0],"screen-bottom",boundaries["SCREEN-BOTTOM"])
+    modVisLock = True
     actr.modify_visicon_features([results[0][0],"screen-left",boundaries["SCREEN-LEFT"],
                                              "screen-right",boundaries["SCREEN-RIGHT"],
                                              "screen-top",boundaries["SCREEN-TOP"],
                                              "screen-bottom",boundaries["SCREEN-BOTTOM"]])
+    modVisLock = False
     
     # Just store the ids in the list
     features = features + results[0]
@@ -571,6 +580,30 @@ actr.add_command("modvis-add",features_added)
 # so, will implement actr.monitor_command_before and actr.monitor_command_after
 # methods
 actr.current_connection.interface.send("monitor","add-visicon-features","modvis-add","after")
+
+# Monitor for the modification of features
+def features_modified(cmd,params,success,results):
+    global currentVisicon
+    global modVisLock
+    
+    if modVisLock:
+        pass
+    else:
+        # find the indices of the modified features in the currentVisicon
+        modFeatIdxs = []
+        for f in results[0]:
+            modFeatIdxs.append(next(i for i,v in enumerate(currentVisicon) if f in v))
+            
+        # determine new attributes, changed attributes, and deleted attributes
+        for p in params:
+            print(p)
+            
+        
+        
+    
+
+actr.add_command("modvis-mod",features_modified)
+actr.current_connection.interface.send("monitor","modify-visicon-features","modvis-mod","after")
 
 # Similar monitors for the removal of features
 def features_removed(cmd,params,success,results):
@@ -610,17 +643,9 @@ def proc_display_monitor(cmd,params,success,results):
     global currentVisicon
     global vgScene
     global vgPrevScene
+    global modVisLock
     
     try:
-        
-        # ensure that "group" is a valid slot name for visicon chunks
-        #actr.extend_possible_slots("group", warn=False)
-        
-        # also have to extend visicon chunk slots with left/right/top/bottom entries
-        #actr.extend_possible_slots("screen-left",warn=False)
-        #actr.extend_possible_slots("screen-right",warn=False)
-        #actr.extend_possible_slots("screen-top",warn=False)
-        #actr.extend_possible_slots("screen-bottom",warn=False)
         
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
@@ -636,18 +661,21 @@ def proc_display_monitor(cmd,params,success,results):
         # add the group label associated with each feature in the visicon to
         # feature's chunk representation by adding a slot named "group" with
         # a value set to the label
+        modVisLock = True
         for visPoint in vgScene.visPoints:
             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-            actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-            #actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
-        
+            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+            actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
+        modVisLock = False
+            
+
         # display boxes around the visicon content
         
         
         
         # now that groups have been determined and we've done everything we
         # want with them, store the current scene as the previous scene
-        vgPrevScene = vgScene
+        #vgPrevScene = vgScene
         
         
     except AttributeError:
@@ -656,6 +684,12 @@ def proc_display_monitor(cmd,params,success,results):
     
 actr.add_command("pd-mon",proc_display_monitor)
 actr.current_connection.interface.send("monitor","proc-display","pd-mon","before")
+
+##############################################################################
+
+# keeps the script running while the model is running. (clear-all) needs to be called to stop this
+#while actr.current_model():
+#    time.sleep(0.025)
 
 
 ##############################################################################
@@ -673,18 +707,22 @@ def test():
     
 
 
-    ids = actr.add_visicon_features(['screen-x',10,'screen-y',20,'height',1,'width',1,'color','blue'],
-                                    ['screen-x',20,'screen-y',30,'height',1,'width',1,'color','red'],
-                                    ['screen-x',0,'screen-y',0,'height',1,'width',1,'color','green'],
-                                    ['screen-x',510,'screen-y',490,'height',1,'width',1,'color','orange'],
-                                    ['screen-x',505,'screen-y',510,'height',1,'width',1,'color','purple'],
-                                    ['screen-x',500,'screen-y',515,'height',1,'width',1,'color','turquoise'])
+    ids = actr.add_visicon_features(['SCREEN-X',10,'SCREEN-Y',20,'HEIGHT',1,'WIDTH',1,'COLOR','blue'],
+                                    ['SCREEN-X',20,'SCREEN-Y',30,'HEIGHT',1,'WIDTH',1,'COLOR','red'],
+                                    ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',1,'WIDTH',1,'COLOR','green'],
+                                    ['SCREEN-X',510,'SCREEN-Y',490,'HEIGHT',1,'WIDTH',1,'COLOR','orange'],
+                                    ['SCREEN-X',505,'SCREEN-Y',510,'HEIGHT',1,'WIDTH',1,'COLOR','purple'],
+                                    ['SCREEN-X',500,'SCREEN-Y',515,'HEIGHT',1,'WIDTH',1,'COLOR','turquoise'])
+    
+    
+    actr.modify_visicon_features([features[0],"SCREEN-X",100],
+                                 [features[2],"SCREEN-X",100],
+                                 [features[4],"SCREEN-X",100])
+
     
     #actr.delete_visicon_features(ids[1])
     actr.run(.1)
     #actr.print_visicon()
     #actr.buffer_chunk("visual-location")
    
-
-
 
