@@ -12,16 +12,9 @@
         ; try modifying the button with an action after it is initialized - this results in:
         ; "#|Warning: Error while calling "agi-win-click-mouse-monitor473" as a monitor for "click-mouse": Error #<TOO-FEW-ARGUMENTS Too few arguments in call to #<Compiled-function BUTTON-PRESS #x3020018E59DF>: 0 arguments provided, at least 1 required. > occurred while trying to evaluate command "agi-win-click-mouse-monitor473" with parameters (NIL (557 557) INDEX) |#"
         ; effectively the same as the lambda function
-
         (setf test-button2 (add-button-to-exp-window test-window :color 'white :text "" :x 250 :y 250 :width 20 :height 10 :action nil))
         (modify-button-for-exp-window test-button2 :action (list 'button-press test-button2))
         ;(modify-button-for-exp-window test-button2 :action (list "test-button-pressed" test-button2)) ; using a command results in the same as using the function
-        
-        ; try adding something else to the window upon button press - this results in:
-        ; "Error: Incorrect keyword arguments in (:ACTION TEST-FUNC "vision" "exp-window" "test") ."
-        ; When calling the (button-test) function itself. Also, it expands test-window?
-        (setf test-button3 (add-button-to-exp-window test-window :color 'white :text "" :x 300 :y 250 :width 20 :height 10 :action nil))
-        ;(modify-button-for-exp-window test-button3 :action (list 'test-func test-window))
         
     )
 
@@ -34,7 +27,3 @@
 (add-act-r-command "test-button-pressed" 'button-press)
 
 
-(defun test-func (window)
-    (print "test")
-    (add-text-to-exp-window window "test" :x 250 :y 200)
-)
