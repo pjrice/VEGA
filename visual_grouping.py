@@ -594,9 +594,30 @@ def features_modified(cmd,params,success,results):
         for f in results[0]:
             modFeatIdxs.append(next(i for i,v in enumerate(currentVisicon) if f in v))
             
+        print(modFeatIdxs)
+        
+        # update currentVisicon to reflect the modifications to the modified features
+        for i in range(len(modFeatIdxs)):
+            
+            # currentVisicon index of the feature we're modifying
+            cvIdx = modFeatIdxs[i]
+            
+            # list of the attributes that were modified for this feature - this includes added and deleted attributes
+            moddedAttrs = params[i][1::2]
+            print(moddedAttrs)
+            
+            # list of the new values of the modified attributes - this includes added and deleted attribute values
+            newAttrVals = params[i][2::2]
+            print(newAttrVals)
+            
+            # go through the currentVisicon feature representation and determine which were changed, added, deleted
+            
+            
+            
+        
         # determine new attributes, changed attributes, and deleted attributes
-        for p in params:
-            print(p)
+        #for p in params:
+        #    print(p)
             
         
         
@@ -715,9 +736,11 @@ def test():
                                     ['SCREEN-X',500,'SCREEN-Y',515,'HEIGHT',1,'WIDTH',1,'COLOR','turquoise'])
     
     
-    actr.modify_visicon_features([features[0],"SCREEN-X",100],
-                                 [features[2],"SCREEN-X",100],
-                                 [features[4],"SCREEN-X",100])
+    
+    # test changing/deleting/adding attributes w/ (modify-visicon-features) from ACT-R environment to see how monitor handles it
+    actr.modify_visicon_features([features[0],"SCREEN-X",100], #just change an attribute
+                                 [features[2],"SCREEN-X",100, 'WIDTH',None], #change an attribute and delete an attribute
+                                 [features[4],"SCREEN-X",100, "GROUP",'test']) #change an attribute and add an attribute
 
     
     #actr.delete_visicon_features(ids[1])

@@ -160,6 +160,11 @@
 
 	(create-specific file-names)
 	;(vote realtime use-model visible t)
+	
+	;(run-program "python" '("/home/ausmanpa/gp/VEGA/visual_grouping.py") :wait nil :output nil)
+	;(run-program "konsole" '("-e" "python -i /home/ausmanpa/gp/VEGA/visual_grouping.py") :wait nil) ;Better - does not require the python while loop+(clear-all)!
+	;(vote realtime use-model visible t)
+	;(clear-all) ; necessary to halt the python background process
 
 )
 
