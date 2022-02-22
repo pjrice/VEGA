@@ -67,6 +67,8 @@ vgPrevScene = None # the previous visual scene, grouped
 
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
 
+denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
+
 ##############################################################################
 # collision methods
 #   - collision methods should accept one argument only - a dictionary of 
@@ -467,7 +469,49 @@ def compute_boundaries(screenX,screenY,height,width):
     boundDict["SCREEN-TOP"] = int(((screenY - (height/2))//2)*2) #should probably be +
     boundDict["SCREEN-BOTTOM"] = int(((screenY + (height/2))//2)*2) #should probably be -
 
-    return boundDict           
+    return boundDict    
+
+##############################################################################
+# Utility to mark extent of groups on experiment window
+
+def denote_group_extent(groupedScene):
+    
+    for groupIdx in groupedScene.groupIdxs:
+        
+        groupXs = []
+        groupYs = []
+        groupSLefts = []
+        groupSRights = []
+        groupSTops = []
+        groupSBottoms = []
+        
+        for visPoint in groupedScene.visPoints:
+            if visPoint.groupIdx == groupIdx:
+                groupXs.append(getattr(visPoint,'SCREEN-X'))
+                groupYs.append(getattr(visPoint,'SCREEN-Y'))
+                groupSLefts.append(getattr(visPoint,'SCREEN-LEFT'))
+                groupSRights.append(getattr(visPoint,'SCREEN-RIGHT'))
+                groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
+                groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
+        
+        groupMeanX = int(np.mean(groupXs))
+        groupMeanY = int(np.mean(groupYs))
+            
+        groupLeft = np.min(groupSLefts)
+        groupRight = np.max(groupSRights)
+        groupTop = np.max(groupSTops)
+        groupBottom = np.min(groupSBottoms)
+            
+        groupHeight = int(groupTop - groupBottom)
+        groupWidth = int(groupRight - groupLeft)
+        
+        actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX+groupWidth,groupMeanY])
+        actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX,groupMeanY+groupHeight])
+        actr.add_line_to_exp_window("Ballot",[groupMeanX+groupWidth,groupMeanY],[groupMeanX+groupWidth,groupMeanY+groupHeight])
+        actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY+groupHeight],[groupMeanX+groupWidth,groupMeanY+groupHeight])
+        
+
+        
 
 ##############################################################################
 # ACT-R interfacing
@@ -691,6 +735,8 @@ def proc_display_monitor(cmd,params,success,results):
             
 
         # display boxes around the visicon content
+        if denoteGroups:
+            denote_group_extent(vgScene)
         
         
         
