@@ -474,45 +474,65 @@ def compute_boundaries(screenX,screenY,height,width):
 ##############################################################################
 # Utility to mark extent of groups on experiment window
 
+# def denote_group_extent(groupedScene):
+    
+#     for groupIdx in groupedScene.groupIdxs:
+        
+#         groupXs = []
+#         groupYs = []
+#         groupSLefts = []
+#         groupSRights = []
+#         groupSTops = []
+#         groupSBottoms = []
+        
+#         for visPoint in groupedScene.visPoints:
+#             if visPoint.groupIdx == groupIdx:
+#                 groupXs.append(getattr(visPoint,'SCREEN-X'))
+#                 groupYs.append(getattr(visPoint,'SCREEN-Y'))
+#                 groupSLefts.append(getattr(visPoint,'SCREEN-LEFT'))
+#                 groupSRights.append(getattr(visPoint,'SCREEN-RIGHT'))
+#                 groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
+#                 groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
+        
+#         groupMeanX = int(np.mean(groupXs))
+#         groupMeanY = int(np.mean(groupYs))
+            
+#         groupLeft = np.min(groupSLefts)
+#         groupRight = np.max(groupSRights)
+#         groupTop = np.max(groupSTops)
+#         groupBottom = np.min(groupSBottoms)
+            
+#         groupHeight = int(groupTop - groupBottom)
+#         groupWidth = int(groupRight - groupLeft)
+        
+#         actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX+groupWidth,groupMeanY])
+#         actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX,groupMeanY+groupHeight])
+#         actr.add_line_to_exp_window("Ballot",[groupMeanX+groupWidth,groupMeanY],[groupMeanX+groupWidth,groupMeanY+groupHeight])
+#         actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY+groupHeight],[groupMeanX+groupWidth,groupMeanY+groupHeight])
+        
 def denote_group_extent(groupedScene):
     
     for groupIdx in groupedScene.groupIdxs:
         
-        groupXs = []
-        groupYs = []
-        groupSLefts = []
-        groupSRights = []
-        groupSTops = []
-        groupSBottoms = []
+        # get the leftmost screen-x coordinate
+        groupXcoord = min([getattr(vp,'SCREEN-X') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
-        for visPoint in groupedScene.visPoints:
-            if visPoint.groupIdx == groupIdx:
-                groupXs.append(getattr(visPoint,'SCREEN-X'))
-                groupYs.append(getattr(visPoint,'SCREEN-Y'))
-                groupSLefts.append(getattr(visPoint,'SCREEN-LEFT'))
-                groupSRights.append(getattr(visPoint,'SCREEN-RIGHT'))
-                groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
-                groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
+        # get the topmost screen-y coordinate
+        groupYcoord = min([getattr(vp,'SCREEN-Y') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
-        groupMeanX = int(np.mean(groupXs))
-        groupMeanY = int(np.mean(groupYs))
-            
-        groupLeft = np.min(groupSLefts)
-        groupRight = np.max(groupSRights)
-        groupTop = np.max(groupSTops)
-        groupBottom = np.min(groupSBottoms)
-            
-        groupHeight = int(groupTop - groupBottom)
-        groupWidth = int(groupRight - groupLeft)
+        # get the rightmost screen-x coordinate, considering width of the visPoints
+        groupRXcoord = max([getattr(vp,'SCREEN-X')+getattr(vp,'WIDTH') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
-        actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX+groupWidth,groupMeanY])
-        actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX,groupMeanY+groupHeight])
-        actr.add_line_to_exp_window("Ballot",[groupMeanX+groupWidth,groupMeanY],[groupMeanX+groupWidth,groupMeanY+groupHeight])
-        actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY+groupHeight],[groupMeanX+groupWidth,groupMeanY+groupHeight])
+        # get the bottommost screen-y coordinate, considering the height of the visPoints
+        groupBYcoord = max([getattr(vp,'SCREEN-Y')+getattr(vp,'HEIGHT') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
-
+        # draw a box on the experiment window outlining the extent of the group
+        actr.add_line_to_exp_window("Ballot",[groupXcoord,groupYcoord],[groupRXcoord,groupYcoord]) # top edge of box
+        actr.add_line_to_exp_window("Ballot",[groupXcoord,groupYcoord],[groupXcoord,groupBYcoord]) # left edge of box
+        actr.add_line_to_exp_window("Ballot",[groupRXcoord,groupYcoord],[groupRXcoord,groupBYcoord]) # right edge of box
+        actr.add_line_to_exp_window("Ballot",[groupXcoord,groupBYcoord],[groupRXcoord,groupBYcoord]) # bottom edge of box
         
-
+        
 ##############################################################################
 # ACT-R interfacing
 
