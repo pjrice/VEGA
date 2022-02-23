@@ -67,7 +67,7 @@ vgPrevScene = None # the previous visual scene, grouped
 
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
 
-denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
+denoteGroups = False # a flag for whether or not to show the extent of the identified groups on the task window
 
 ##############################################################################
 # collision methods

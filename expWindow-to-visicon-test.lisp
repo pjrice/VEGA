@@ -7,7 +7,7 @@
 (defvar *window*)
 
 
-(setf *window* (open-exp-window "test" :width 500 :height 500))
+(setf *window* (open-exp-window "test" :x 0 :y 0 :width 500 :height 500))
 
 (install-device *window*)
 
