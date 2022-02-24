@@ -49,8 +49,8 @@ import math
 import warnings
 import numpy as np
 
-#sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
-sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
+sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+#sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
 
 import actr
 
@@ -474,58 +474,24 @@ def compute_boundaries(screenX,screenY,height,width):
 
 ##############################################################################
 # Utility to mark extent of groups on experiment window
-
-# def denote_group_extent(groupedScene):
-    
-#     for groupIdx in groupedScene.groupIdxs:
-        
-#         groupXs = []
-#         groupYs = []
-#         groupSLefts = []
-#         groupSRights = []
-#         groupSTops = []
-#         groupSBottoms = []
-        
-#         for visPoint in groupedScene.visPoints:
-#             if visPoint.groupIdx == groupIdx:
-#                 groupXs.append(getattr(visPoint,'SCREEN-X'))
-#                 groupYs.append(getattr(visPoint,'SCREEN-Y'))
-#                 groupSLefts.append(getattr(visPoint,'SCREEN-LEFT'))
-#                 groupSRights.append(getattr(visPoint,'SCREEN-RIGHT'))
-#                 groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
-#                 groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
-        
-#         groupMeanX = int(np.mean(groupXs))
-#         groupMeanY = int(np.mean(groupYs))
-            
-#         groupLeft = np.min(groupSLefts)
-#         groupRight = np.max(groupSRights)
-#         groupTop = np.max(groupSTops)
-#         groupBottom = np.min(groupSBottoms)
-            
-#         groupHeight = int(groupTop - groupBottom)
-#         groupWidth = int(groupRight - groupLeft)
-        
-#         actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX+groupWidth,groupMeanY])
-#         actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY],[groupMeanX,groupMeanY+groupHeight])
-#         actr.add_line_to_exp_window("Ballot",[groupMeanX+groupWidth,groupMeanY],[groupMeanX+groupWidth,groupMeanY+groupHeight])
-#         actr.add_line_to_exp_window("Ballot",[groupMeanX,groupMeanY+groupHeight],[groupMeanX+groupWidth,groupMeanY+groupHeight])
         
 def denote_group_extent(groupedScene):
     
+    # groupedScene contains coordinates in visicon space, which are centered on the feature. This function will 
+    # draw boxes on the visicon, which uses coordinates that position in the top left. So, will have to convert
     for groupIdx in groupedScene.groupIdxs:
         
         # get the leftmost screen-x coordinate
-        groupXcoord = min([getattr(vp,'SCREEN-X') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
+        groupXcoord = min([getattr(vp,'SCREEN-X')-(getattr(vp,'WIDTH')/2) for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
         # get the topmost screen-y coordinate
-        groupYcoord = min([getattr(vp,'SCREEN-Y') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
+        groupYcoord = min([getattr(vp,'SCREEN-Y')-(getattr(vp,'HEIGHT')/2) for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
         # get the rightmost screen-x coordinate, considering width of the visPoints
-        groupRXcoord = max([getattr(vp,'SCREEN-X')+getattr(vp,'WIDTH') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
+        groupRXcoord = max([getattr(vp,'SCREEN-X')+(getattr(vp,'WIDTH')/2) for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
         # get the bottommost screen-y coordinate, considering the height of the visPoints
-        groupBYcoord = max([getattr(vp,'SCREEN-Y')+getattr(vp,'HEIGHT') for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
+        groupBYcoord = max([getattr(vp,'SCREEN-Y')+(getattr(vp,'HEIGHT')/2) for vp in groupedScene.visPoints if vp.groupIdx==groupIdx])
         
         # draw a box on the experiment window outlining the extent of the group
         actr.add_line_to_exp_window("Ballot",[groupXcoord,groupYcoord],[groupRXcoord,groupYcoord]) # top edge of box
