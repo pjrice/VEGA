@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as ET
 import sys
-sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+#sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
 import actr
 
 
