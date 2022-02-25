@@ -69,6 +69,220 @@
    (my-idx :accessor my-idx :initarg :my-idx :initform nil)
    ))
 
+   
+; The contest list
+(setf cntst-lst
+	  (list
+	   
+	   (make-instance 'contest
+		 :office-name "PresidentoftheUnitedStates"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "GordonBearce" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "VernonStanleyAlbury" :party-name "DEM")
+		  (make-instance 'cand-choice
+			:cand-name "JanetteFroman" :party-name "LIB")))
+	   
+	   (make-instance 'contest
+		 :office-name "UnitedStatesSenator"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "CecileCadieux" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "FernBrzezinski" :party-name "DEM")
+		  (make-instance 'cand-choice
+			:cand-name "CoreyDery" :party-name "IND")))
+	   
+	   (make-instance 'contest
+		 :office-name "UnitedStatesRepresentativeDistrict7"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "PedroBrouse" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "RobertMettler" :party-name "DEM")))
+
+	   (make-instance 'contest
+		 :office-name "Governor"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "GlenTravisLozier" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "RickStickles" :party-name "DEM")
+		  (make-instance 'cand-choice
+			:cand-name "MauriceHumble" :party-name "IND")))
+
+	   (make-instance 'contest
+		 :office-name "LieutenantGovernor"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "ShaneTerrio" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "CassiePrincipe" :party-name "DEM")))
+
+	   (make-instance 'contest
+		 :office-name "AttorneyGeneral"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "TimSpeight" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "RickOrgan" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "ComptrollerofPublicAccounts"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "ThereseGustin" :party-name "IND")
+		  (make-instance 'cand-choice
+			:cand-name "GregConverse" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "CommissionerofGeneralLandOffice"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "SamSaddler" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "EliseEllzey" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "CommissionerofAgriculture"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "PollyRylander" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "RobertoAron" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "RailroadCommissioner"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "JillianBalas" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "ZacharyMinick" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "StateSenator"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "RicardoNigro" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "WesleyStevenMillette" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "StateRepresentativeDistrict134"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "PetraBencomo" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "SusanneRael" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "MemberStateBoardofEducationDistrict2"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "PeterVarga" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "MarkBaber" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "PresidingJudgeTexasSupremeCourtPlace2"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "TimGrasty" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "PresidingJudgeCourtofCriminalAppeals"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "DanPlouffe" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "DerrickMelgar" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "DistrictAttorney"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "CoreyBehnke" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "JenniferALundeed" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "CountyTreasurer"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "DeanCaffee" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "GordonKallas" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "Sheriff"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "StanleySaari" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "JasonValle" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "CountyTaxAssessor"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "HowardGrady" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "RandyHClemons" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "JusticeofthePeace"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "DeborahKamps" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "ClydeGaytonJr" :party-name "DEM")))
+
+	   
+	   (make-instance 'contest
+		 :office-name "CountyJudge"
+		 :cand-lst
+		 (list
+		  (make-instance 'cand-choice
+			:cand-name "DanAtchley" :party-name "REP")
+		  (make-instance 'cand-choice
+			:cand-name "LewisShine" :party-name "DEM")))
+	))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; A ballot function that gets called within combine.lisp. Constructs the ballot on the ACT-R experiment window
 ;; so that a model or human can interact with the ballot.
