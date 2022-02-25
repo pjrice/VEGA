@@ -297,7 +297,7 @@
     ;(reset)
 
     ; Initializes the experiment window
-    (setf *window* (open-exp-window "test" :visible t :x 0 :y 0 :width 500 :height 500))
+    (setf *window* (open-exp-window "test" :visible t :x 0 :y 0 :width 900 :height 700))
     
     ; Initializes values that will be used to construct ballot, then loops over columns/rows to do so
     (let* (
@@ -344,10 +344,10 @@
                     do  (progn
                             
                             ; Displays the name of the candidate on the experiment window and stores this in candidate-party-object-array 
-                            (setf (aref candidate-party-object-array index) (add-text-to-exp-window *window* (cand-name candidate) :color 'purple :x (+ randomx 30 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
+                            (setf (aref candidate-party-object-array index) (add-text-to-exp-window *window* (cand-name candidate) :color 'purple :x (+ randomx 30 (rand *noise*)) :y (+ 1 randomy y-offset (rand *noise*))))
                             
                             ; Displays the party of the candidate on the experiment window and stores this in candidate-party-object-array
-                            (setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window *window* (party-name candidate) :color 'blue :x (+ randomx 200 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
+                            (setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window *window* (party-name candidate) :color 'blue :x (+ randomx 200 (rand *noise*)) :y (+ 1 randomy y-offset (rand *noise*))))
                             
                             ; Displays the button associated with the candidate and subsequently stores the button's info in hash tables and modifies the button's action
                             (let* (
