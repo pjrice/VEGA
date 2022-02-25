@@ -49,8 +49,8 @@ import math
 import warnings
 import numpy as np
 
-sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
-#sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
+#sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+sys.path.insert(0,'/Users/pjr5/Desktop/actr7.x/tutorial/python')
 
 import actr
 
