@@ -297,7 +297,7 @@
     ;(reset)
 
     ; Initializes the experiment window
-    (setf *window* (open-exp-window "test" :visible t :x 0 :y 0 :width 900 :height 700))
+    (setf *window* (open-exp-window "Ballot" :visible t :x 0 :y 0 :width 900 :height 700))
     
     ; Initializes values that will be used to construct ballot, then loops over columns/rows to do so
     (let* (
