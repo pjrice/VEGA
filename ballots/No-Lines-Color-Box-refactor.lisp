@@ -15,6 +15,8 @@
 (defparameter button-map (make-hash-table))
 ;; Will be used to map a given button to the associated candidate-party name's race index in cntst-lst
 (defparameter button-index (make-hash-table))
+;; Will be used to map a given button to the associated candidate's name
+(defparameter button-candidate (make-hash-table))
 
 ; Holdovers from construcing the ballot with noise
 ; Values can be increased to add random element to positioning of features on experiment window
@@ -116,9 +118,66 @@
                     (y-offset 20) ; offset value for the y coordinates of candidate/party names and corresponding buttons
                     (index 0) ; indexes the candidate name/party in the candidate-party-object-array and maps the button to their race's index in cntst-lst
                     )
-                ) ; end of (let*) statement within row loop
+                    
+                    ; Add the background box for this race to the experiment window
+                    (add-image-to-exp-window *window* "box" "lb.gif" :x (- randomx 5) :y (- randomy 5) :width 280 :height 75)
+                    
+                    ; Add the name of the contest to the experiment window
+                    (add-text-to-exp-window *window* (office-name contest) :color 'red :x randomx :y randomy)
+                    
+                    ; Loop over the candidate names/parties/buttons to add them to the experiment window
+                    (loop while candidate
+                    do  (progn
+                            
+                            ; Displays the name of the candidate on the experiment window and stores this in candidate-party-object-array 
+                            (setf (aref candidate-party-object-array index) (add-text-to-exp-window *window* (cand-name candidate) :color 'purple :x (+ randomx 30 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
+                            
+                            ; Displays the party of the candidate on the experiment window and stores this in candidate-party-object-array
+                            (setf (aref candidate-party-object-array (+ index 3)) (add-text-to-exp-window *window* (party-name candidate) :color 'blue :x (+ randomx 200 (rand noise)) :y (+ 1 randomy y-offset (rand noise))))
+                            
+                            ; Displays the button associated with the candidate and subsequently stores the button's info in hash tables and modifies the button's action
+                            (let* (
+                                (button (add-button-to-exp-window *window* :color 'white :text "" :x randomx :y (+ randomy y-offset 2) :width 20 :height 10 :action nil))
+                                )
+                                ;
+                                (setf (gethash button button-state) 0) ; sets the button's state to 0 (unselected, white)
+                                (setf (gethash button button-map) candidate-party-object-array) ; stores the candidate name/party exp-window objects associated with the button
+                                (setf (gethash button button-index) index) ; stores the index of the candidate/party's race in cntst-list
+                                (setf (gethash button button-candidate) candidate) ; stores the candidate associated with the button
+                                (modify-button-for-exp-window button :action (list 'on-button-press button)) ; modifies the button's action with the (on-button-press) function
+                            )
+                            
+                            ; increment values needed to display/store info for the next candidate in the loop
+                            (setf y-offset (+ y-offset 15))
+                            (setf candidate (pop candidates))
+                            (setf index (+ index 1))
+                            
+                        ) ; end of progn within candidate loop
+                    ) ; end of loop over candidates within a race
+                ) ; end of (let*) statement that exp-window functions are called within
+                
+                ; increment row index and check for break conditions
+                (setq j (+ j 1))
+                (when (> j 7) (return j)) ; more than 7 rows, break the loop
+                (when (not cntst-lst) (return j)) ;checks if we've run out of races
+                
             ) ; end of row loop
+            
+            ; increment column index and check for break conditions
+            (setq i (+ i 1))
+            (when (> i 2) (return i)) ; more than 3 columns, break the loop
+            (when (not cntst-lst) (return i)) ;checks if we've run out of races
         ) ; end of column loop
+        
+        ; Runs the model for 200 seconds on the ballot if use-model is true
+        (if use-model
+            (progn
+                (install-device *window*)
+                (start-hand-at-mouse)
+                (if realtime (run 200 t) (run 200))
+                (if dolog (log-ballot))
+            )
+        )
     ) ; end of outer (let*) statement 
 ) ; end of function definition
 
