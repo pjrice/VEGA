@@ -546,12 +546,24 @@ def features_added(cmd,params,success,results):
         screenYVal = params[idx][params[idx].index('SCREEN-Y') + 1]
         
         # height/width may not be defined in the (add-visicon-features) call
-        if ('HEIGHT' in params[idx]) and ('WIDTH' in params[idx]):
+        # if not, assume height/width is 1 and update actr feature to reflect this
+        if ('HEIGHT' in params[idx]):
             heightVal = params[idx][params[idx].index('HEIGHT') + 1]
-            widthVal = params[idx][params[idx].index('WIDTH') + 1]
         else:
             heightVal = 1
+            params[idx] = params[idx]+['HEIGHT',heightVal]
+            modVisLock = True
+            actr.modify_visicon_features([results[0][idx],'HEIGHT',heightVal])
+            modVisLock = False
+            
+        if ('WIDTH' in params[idx]):
+            widthVal = params[idx][params[idx].index('WIDTH') + 1]
+        else:
             widthVal = 1
+            params[idx] = params[idx]+['WIDTH',widthVal]
+            modVisLock = True
+            actr.modify_visicon_features([results[0][idx],'WIDTH',widthVal])
+            modVisLock = False
             
         #compute the left/right/top/bottom boundaries that are used by the models
         boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
@@ -741,7 +753,10 @@ def test():
                                     ['SCREEN-X',505,'SCREEN-Y',510,'HEIGHT',1,'WIDTH',1,'COLOR','purple'],
                                     ['SCREEN-X',500,'SCREEN-Y',515,'HEIGHT',1,'WIDTH',1,'COLOR','turquoise'])
     
-    actr.add_visicon_features(['SCREEN-X',0,'SCREEN-Y',0])
+    actr.add_visicon_features(['SCREEN-X',0,'SCREEN-Y',0],
+                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12],
+                              ['SCREEN-X',0,'SCREEN-Y',0,'WIDTH',12],
+                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12])
     
     
     
