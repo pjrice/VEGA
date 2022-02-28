@@ -49,8 +49,16 @@ import math
 import warnings
 import numpy as np
 
+import platform
+
+if platform.system()=='Linux':
+    sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+elif platform.system()=='Darwin':
+    sys.path.insert(0,'/Users/pjr5/Desktop/actr7.x/tutorial/python')
+
+
 #sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
-sys.path.insert(0,'/Users/pjr5/Desktop/actr7.x/tutorial/python')
+#sys.path.insert(0,'/Users/pjr5/Desktop/actr7.x/tutorial/python')
 
 import actr
 
@@ -440,35 +448,14 @@ def inherit_group_labels(groupedScene,prevGroupedScene):
     for visPoint in groupedScene.visPoints:
             visPoint.groupName = groupedScene.groupNames[visPoint.groupIdx]
             
-def compute_boundary(visiconPoint,boundary):
-    
-    if boundary == "left":
-        pointWidth = getattr(visiconPoint,"WIDTH")
-        pointX = getattr(visiconPoint,"SCREEN-X")
-        boundVal = ((pointX - (pointWidth/2))//2)*2
-    elif boundary == "right":
-        pointWidth = getattr(visiconPoint,"WIDTH")
-        pointX = getattr(visiconPoint,"SCREEN-X")
-        boundVal = ((pointX + (pointWidth/2))//2)*2
-    elif boundary == "top":
-        pointHeight = getattr(visiconPoint,"HEIGHT")
-        pointY = getattr(visiconPoint,"SCREEN-Y")
-        boundVal = ((pointY - (pointHeight/2))//2)*2 #should probably be +
-    elif boundary == "bottom":
-        pointHeight = getattr(visiconPoint,"HEIGHT")
-        pointY = getattr(visiconPoint,"SCREEN-Y")
-        boundVal = ((pointY + (pointHeight/2))//2)*2 #should probably be -
-        
-    return boundVal
-
 def compute_boundaries(screenX,screenY,height,width):
     
     boundDict = {}
     
     boundDict["SCREEN-LEFT"] = int(((screenX - (width/2))//2)*2)
     boundDict["SCREEN-RIGHT"] = int(((screenX + (width/2))//2)*2)
-    boundDict["SCREEN-TOP"] = int(((screenY - (height/2))//2)*2) #should probably be +
-    boundDict["SCREEN-BOTTOM"] = int(((screenY + (height/2))//2)*2) #should probably be -
+    boundDict["SCREEN-TOP"] = int(((screenY - (height/2))//2)*2)
+    boundDict["SCREEN-BOTTOM"] = int(((screenY + (height/2))//2)*2)
 
     return boundDict    
 
@@ -701,8 +688,9 @@ def proc_display_monitor(cmd,params,success,results):
         
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
-        #radius= 8 for No-Lines-Color-Box
-        vgScene = visGroups(currentVisicon,25,'box')
+        # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
+        # radius=8 for No-Lines-Color-Box
+        vgScene = visGroups(currentVisicon,20,'box')
         
         # generate and apply labels for the newly determined groups
         # label application first occurs in the python representation, and then
