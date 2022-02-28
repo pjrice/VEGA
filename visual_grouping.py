@@ -74,8 +74,8 @@ currentVisicon = [] # contains a representation of the current visicon
 vgScene = None # the current visual scene, grouped
 vgPrevScene = None # the previous visual scene, grouped
 
+# control flags
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
-
 denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
 
 ##############################################################################
