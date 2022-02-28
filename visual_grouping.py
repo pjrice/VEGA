@@ -143,24 +143,17 @@ def box_collision(argDict):
     target = box_nearest_pt(p1,p2)
     
     # defines a box around p1, and determines whether 
-    if hasattr(p1,'WIDTH') and hasattr(p1,'HEIGHT'):
+    p1x = getattr(p1,'SCREEN-X')
+    p1y = getattr(p1,'SCREEN-Y')
+    p1w = getattr(p1,'WIDTH')
+    p1h = getattr(p1,'HEIGHT')
         
-        p1x = getattr(p1,'SCREEN-X')
-        p1y = getattr(p1,'SCREEN-Y')
-        p1w = getattr(p1,'WIDTH')
-        p1h = getattr(p1,'HEIGHT')
-        
-        leftEdge = p1x - (p1w/2)
-        rightEdge = p1x + (p1w/2)
-        bottomEdge = p1y - (p1h/2)
-        topEdge = p1y + (p1h/2)
-    else:
-        # these were set to 0 in John's original code but this isn't sensible
-        leftEdge = 1
-        rightEdge = 1
-        bottomEdge = 1
-        topEdge = 1
-        
+    leftEdge = p1x - (p1w/2)
+    rightEdge = p1x + (p1w/2)
+    bottomEdge = p1y - (p1h/2) #potentially incorrect
+    topEdge = p1y + (p1h/2) #potentially incorrect
+    
+    
     # in John's words: "if there was a target, check it, otherwise we are overlapping and just return T"
     if target:
         
@@ -199,27 +192,16 @@ def box_nearest_pt(originPt,targetPt):
     originX = getattr(originPt,'SCREEN-X')
     originY = getattr(originPt,'SCREEN-Y')
     
-    if hasattr(targetPt,'WIDTH') and hasattr(targetPt,'HEIGHT'):
-        try:
-            targetWidth = getattr(targetPt,'WIDTH')
-            targetHeight = getattr(targetPt,'HEIGHT')
-            targetX = getattr(targetPt,'SCREEN-X')
-            targetY = getattr(targetPt,'SCREEN-Y')
+    targetWidth = getattr(targetPt,'WIDTH')
+    targetHeight = getattr(targetPt,'HEIGHT')
+    targetX = getattr(targetPt,'SCREEN-X')
+    targetY = getattr(targetPt,'SCREEN-Y')
         
-            leftEdge = targetX - (targetWidth/2)
-            rightEdge = targetX + (targetWidth/2)
-            bottomEdge = targetY - (targetHeight/2)
-            topEdge = targetY + (targetHeight/2)
-        except AttributeError:
-            raise
-    else:
-        # these were set to 0 in John's original code
-        warnings.warn("Warning...assuming visual feature has width/height of 1, as they are not defined as attributes of the feature")
-        leftEdge = 1
-        rightEdge = 1
-        bottomEdge = 1
-        topEdge = 1
-        
+    leftEdge = targetX - (targetWidth/2)
+    rightEdge = targetX + (targetWidth/2)
+    bottomEdge = targetY - (targetHeight/2)
+    topEdge = targetY + (targetHeight/2)
+    
     # first four if statements check if origin point is outside of left/right
     # edges AND top/bottom edges;
     # second four if statements check if origin point is OUTSIDE of left/right
@@ -551,40 +533,42 @@ def features_added(cmd,params,success,results):
     global vgPrevScene
     global modVisLock
     
-    screenXVal = params[0][params[0].index('SCREEN-X') + 1]
-    screenYVal = params[0][params[0].index('SCREEN-Y') + 1]
-    
-    # height/width may not be defined in the (add-visicon-features) call
-    if ('HEIGHT' in params[0]) and ('WIDTH' in params[0]):
-        heightVal = params[0][params[0].index('HEIGHT') + 1]
-        widthVal = params[0][params[0].index('WIDTH') + 1]
-    else:
-        heightVal = 1
-        widthVal = 1
-    
-    #compute the left/right/top/bottom boundaries that are used by the models
-    boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
-    
-    #modify the visicon entry for this feature with the computed boundaries
-    modVisLock = True
-    actr.modify_visicon_features([results[0][0],"screen-left",boundaries["SCREEN-LEFT"],
-                                             "screen-right",boundaries["SCREEN-RIGHT"],
-                                             "screen-top",boundaries["SCREEN-TOP"],
-                                             "screen-bottom",boundaries["SCREEN-BOTTOM"]])
-    modVisLock = False
-    
-    # Just store the ids in the list
+    # Store the feature ids in the features list
     features = features + results[0]
     
     # insert the feature ID into the feature's details 
     [j.insert(0,i) for i,j in zip(results[0],params)]
     
-    # update the params list with the calculated boundaries
-    boundsList = [val for pair in zip(boundaries.keys(),boundaries.values()) for val in pair]
-    params[0] = params[0]+boundsList
-    
+    for idx in range(len(params)):
+        
+        #get x/y coordinate of feature
+        screenXVal = params[idx][params[idx].index('SCREEN-X') + 1]
+        screenYVal = params[idx][params[idx].index('SCREEN-Y') + 1]
+        
+        # height/width may not be defined in the (add-visicon-features) call
+        if ('HEIGHT' in params[idx]) and ('WIDTH' in params[idx]):
+            heightVal = params[idx][params[idx].index('HEIGHT') + 1]
+            widthVal = params[idx][params[idx].index('WIDTH') + 1]
+        else:
+            heightVal = 1
+            widthVal = 1
+            
+        #compute the left/right/top/bottom boundaries that are used by the models
+        boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
+        
+        #modify the visicon entry for this feature with the computed boundaries
+        modVisLock = True
+        actr.modify_visicon_features([results[0][idx],"screen-left",boundaries["SCREEN-LEFT"],
+                                                              "screen-right",boundaries["SCREEN-RIGHT"],
+                                                              "screen-top",boundaries["SCREEN-TOP"],
+                                                              "screen-bottom",boundaries["SCREEN-BOTTOM"]])
+        modVisLock = False
+        
+        # update the params list with the calculated boundaries
+        boundsList = [val for pair in zip(boundaries.keys(),boundaries.values()) for val in pair]
+        params[idx] = params[idx]+boundsList
+        
     currentVisicon = currentVisicon + params
-    
     
     
 
@@ -756,6 +740,8 @@ def test():
                                     ['SCREEN-X',510,'SCREEN-Y',490,'HEIGHT',1,'WIDTH',1,'COLOR','orange'],
                                     ['SCREEN-X',505,'SCREEN-Y',510,'HEIGHT',1,'WIDTH',1,'COLOR','purple'],
                                     ['SCREEN-X',500,'SCREEN-Y',515,'HEIGHT',1,'WIDTH',1,'COLOR','turquoise'])
+    
+    actr.add_visicon_features(['SCREEN-X',0,'SCREEN-Y',0])
     
     
     
