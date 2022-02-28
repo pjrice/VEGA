@@ -77,6 +77,7 @@ vgPrevScene = None # the previous visual scene, grouped
 # control flags
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
 denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
+noImages = True # controls whether or not features that are images are considered during grouping
 
 ##############################################################################
 # collision methods
@@ -686,7 +687,11 @@ def proc_display_monitor(cmd,params,success,results):
         # the scene using the specified radius and collision method
         # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
         # radius=8 for No-Lines-Color-Box
-        vgScene = visGroups(currentVisicon,20,'box')
+        if noImages:
+            noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
+            vgScene = visGroups(noImageVisicon,8,'box')
+        else:
+            vgScene = visGroups(currentVisicon,8,'box')
         
         # generate and apply labels for the newly determined groups
         # label application first occurs in the python representation, and then
