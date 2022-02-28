@@ -10,7 +10,7 @@
 
 (run-single '("No-Lines-Color" nil nil nil nil nil) nil nil t)
 
-(run-single '("No-Lines-Color-Box-New" nil nil nil nil nil) nil nil t)
+(run-single '("No-Lines-Color-Box" nil nil nil nil nil) nil nil t)
 
 
 
