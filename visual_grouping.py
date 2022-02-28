@@ -701,7 +701,8 @@ def proc_display_monitor(cmd,params,success,results):
         
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
-        vgScene = visGroups(currentVisicon,8,'box')
+        #radius= 8 for No-Lines-Color-Box
+        vgScene = visGroups(currentVisicon,25,'box')
         
         # generate and apply labels for the newly determined groups
         # label application first occurs in the python representation, and then
