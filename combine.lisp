@@ -85,24 +85,24 @@
 	(print file-names) ; prints the current model makeup, useful for when running many trials
 	
 	; Loads in the ballot (needs to be a different type than below because it is a straight load instead of an open
-	(if (nth 0 file-names) (load (concatenate 'string base-file-name "ballots/" (nth 0 file-names) ".lisp"))
-											(load (car (directory (concatenate 'string base-file-name "ballots/*.lisp")))))
+	(if (nth 0 file-names) (load (concatenate 'string base-file-name "1Ballot/" (nth 0 file-names) ".lisp"))
+											(load (car (directory (concatenate 'string base-file-name "1Ballot/*.lisp")))))
 
 
 	(let 
 	(
 		; Gets the name of each file to combine to create the model
 		(parameters-file (open (concatenate 'string base-file-name "parameters.lisp")))
-		;(memory-file (if (nth 1 file-names) (open (concatenate 'string base-file-name "2Memory/" (nth 1 file-names) ".lisp"))
-		;									(open (car (directory (concatenate 'string base-file-name "2Memory/*.lisp"))))))
-		;(macronavigation-file (if (nth 2 file-names) (open (concatenate 'string base-file-name "3Macronavigation/" (nth 2 file-names) ".lisp"))
-		;									(open (car (directory (concatenate 'string base-file-name "3Macronavigation/*.lisp"))))))
-		;(encoding-file (if (nth 3 file-names) (open (concatenate 'string base-file-name "4Encoding/" (nth 3 file-names) ".lisp"))
-		;									(open (car (directory (concatenate 'string base-file-name "4Encoding/*.lisp"))))))
-		;(micronavigation-file (if (nth 4 file-names) (open (concatenate 'string base-file-name "5Micronavigation/" (nth 4 file-names) ".lisp"))
-		;									(open (car (directory (concatenate 'string base-file-name "5Micronavigation/*.lisp"))))))
-		;(click-file (if (nth 5 file-names) (open (concatenate 'string base-file-name "6Click/" (nth 5 file-names) ".lisp"))
-		;									(open (car (directory (concatenate 'string base-file-name "6Click/*.lisp"))))))
+		(memory-file (if (nth 1 file-names) (open (concatenate 'string base-file-name "2Memory/" (nth 1 file-names) ".lisp"))
+											(open (car (directory (concatenate 'string base-file-name "2Memory/*.lisp"))))))
+		(macronavigation-file (if (nth 2 file-names) (open (concatenate 'string base-file-name "3Macronavigation/" (nth 2 file-names) ".lisp"))
+											(open (car (directory (concatenate 'string base-file-name "3Macronavigation/*.lisp"))))))
+		(encoding-file (if (nth 3 file-names) (open (concatenate 'string base-file-name "4Encoding/" (nth 3 file-names) ".lisp"))
+											(open (car (directory (concatenate 'string base-file-name "4Encoding/*.lisp"))))))
+		(micronavigation-file (if (nth 4 file-names) (open (concatenate 'string base-file-name "5Micronavigation/" (nth 4 file-names) ".lisp"))
+											(open (car (directory (concatenate 'string base-file-name "5Micronavigation/*.lisp"))))))
+		(click-file (if (nth 5 file-names) (open (concatenate 'string base-file-name "6Click/" (nth 5 file-names) ".lisp"))
+											(open (car (directory (concatenate 'string base-file-name "6Click/*.lisp"))))))
 		
 		; Start of model, to add to
 		(model-combination '(define-model combined))
@@ -129,12 +129,11 @@
 		
 		;Creates and writes the model file
 		(setf model-combination (append model-combination (get-to-add parameters-file))) ;Adds parameters to the model
-		;(setf model-combination (append model-combination (get-to-add memory-file))) ;Adds declaritive memory to the model
-		;(setf model-combination (append model-combination all-perfect))
-		;(setf model-combination (append model-combination (get-to-add macronavigation-file))) ;Adds macronavigation to the model
-		;(setf model-combination (append model-combination (get-to-add encoding-file))) ;Adds encoding to the model
-		;(setf model-combination (append model-combination (get-to-add micronavigation-file))) ;Adds micronavigation to the model
-		;(setf model-combination (append model-combination (get-to-add click-file))) ;Adds click to the model
+		(setf model-combination (append model-combination (get-to-add memory-file))) ;Adds declarative memory to the model
+		(setf model-combination (append model-combination (get-to-add macronavigation-file))) ;Adds macronavigation to the model
+		(setf model-combination (append model-combination (get-to-add encoding-file))) ;Adds encoding to the model
+		(setf model-combination (append model-combination (get-to-add micronavigation-file))) ;Adds micronavigation to the model
+		(setf model-combination (append model-combination (get-to-add click-file))) ;Adds click to the model
 	
 		
 		(setf model-combination (append model-combination (list '(goal-focus Vote)))) ;Adds the start goal focus
