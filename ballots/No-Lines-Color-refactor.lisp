@@ -44,246 +44,6 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Define the list of races: their names, candidates, and parties
-;; Used in the below (vote) function to construct the ballot
-
-(defparameter cntst-lst nil)
-
-; A single race
-(defclass contest ()
-  ((office-name :accessor office-name :initarg :office-name :initform nil)
-
-   (cand-lst :accessor cand-lst :initarg :cand-lst :initform nil)
-   (selection :accessor selection :initarg :selection :initform nil)
-   (office-field :accessor office-field :initarg :office-field)
-    )
-  )
-  
-
-; A single candidate  
-(defclass cand-choice ()
-  ((cand-name :accessor cand-name :initarg :cand-name :initform nil)
-   (party-name :accessor party-name :initarg :party-name :initform "")
-   (selected-p :accessor selected-p :initarg :selected-p :initform nil)
-   (parent :accessor parent :initarg :parent :initform nil)
-   (my-idx :accessor my-idx :initarg :my-idx :initform nil)
-   ))
-
-   
-; The contest list
-(setf cntst-lst
-	  (list
-	   
-	   (make-instance 'contest
-		 :office-name "PresidentoftheUnitedStates"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "GordonBearce" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "VernonStanleyAlbury" :party-name "DEM")
-		  (make-instance 'cand-choice
-			:cand-name "JanetteFroman" :party-name "LIB")))
-	   
-	   (make-instance 'contest
-		 :office-name "UnitedStatesSenator"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "CecileCadieux" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "FernBrzezinski" :party-name "DEM")
-		  (make-instance 'cand-choice
-			:cand-name "CoreyDery" :party-name "IND")))
-	   
-	   (make-instance 'contest
-		 :office-name "UnitedStatesRepresentativeDistrict7"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "PedroBrouse" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RobertMettler" :party-name "DEM")))
-
-	   (make-instance 'contest
-		 :office-name "Governor"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "GlenTravisLozier" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RickStickles" :party-name "DEM")
-		  (make-instance 'cand-choice
-			:cand-name "MauriceHumble" :party-name "IND")))
-
-	   (make-instance 'contest
-		 :office-name "LieutenantGovernor"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "ShaneTerrio" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "CassiePrincipe" :party-name "DEM")))
-
-	   (make-instance 'contest
-		 :office-name "AttorneyGeneral"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "TimSpeight" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RickOrgan" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "ComptrollerofPublicAccounts"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "ThereseGustin" :party-name "IND")
-		  (make-instance 'cand-choice
-			:cand-name "GregConverse" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CommissionerofGeneralLandOffice"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "SamSaddler" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "EliseEllzey" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CommissionerofAgriculture"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "PollyRylander" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RobertoAron" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "RailroadCommissioner"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "JillianBalas" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "ZacharyMinick" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "StateSenator"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "RicardoNigro" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "WesleyStevenMillette" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "StateRepresentativeDistrict134"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "PetraBencomo" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "SusanneRael" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "MemberStateBoardofEducationDistrict2"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "PeterVarga" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "MarkBaber" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "PresidingJudgeTexasSupremeCourtPlace2"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "TimGrasty" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "PresidingJudgeCourtofCriminalAppeals"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DanPlouffe" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "DerrickMelgar" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "DistrictAttorney"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "CoreyBehnke" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "JenniferALundeed" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CountyTreasurer"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DeanCaffee" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "GordonKallas" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "Sheriff"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "StanleySaari" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "JasonValle" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CountyTaxAssessor"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "HowardGrady" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "RandyHClemons" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "JusticeofthePeace"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DeborahKamps" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "ClydeGaytonJr" :party-name "DEM")))
-
-	   
-	   (make-instance 'contest
-		 :office-name "CountyJudge"
-		 :cand-lst
-		 (list
-		  (make-instance 'cand-choice
-			:cand-name "DanAtchley" :party-name "REP")
-		  (make-instance 'cand-choice
-			:cand-name "LewisShine" :party-name "DEM")))
-	))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; A ballot function that gets called within combine.lisp. Constructs the ballot on the ACT-R experiment window
 ;; so that a model or human can interact with the ballot.
 ;; realtime is a boolean that specifies whether to run the model in real time or not (only pertanent if use-model is true)
@@ -333,16 +93,13 @@
                     (index 0) ; indexes the candidate name/party in the candidate-party-object-array and maps the button to their race's index in cntst-lst
                     )
                     
-                    ; Add the background box for this race to the experiment window
-                    (add-image-to-exp-window *window* "box" "lb.gif" :x (- randomx 5) :y (- randomy 5) :width 280 :height 75)
-                    
                     ; Add the name of the contest to the experiment window
                     (add-text-to-exp-window *window* (office-name contest) :color 'red :x randomx :y randomy)
                     
                     ; Loop over the candidate names/parties/buttons to add them to the experiment window
                     (loop while candidate
                     do  (progn
-                            
+                    
                             ; Displays the name of the candidate on the experiment window and stores this in candidate-party-object-array 
                             (setf (aref candidate-party-object-array index) (add-text-to-exp-window *window* (cand-name candidate) :color 'purple :x (+ randomx 30 (rand *noise*)) :y (+ 1 randomy y-offset (rand *noise*))))
                             
@@ -365,7 +122,7 @@
                             (setf y-offset (+ y-offset 15))
                             (setf candidate (pop candidates))
                             (setf index (+ index 1))
-                            
+                    
                         ) ; end of progn within candidate loop
                     ) ; end of loop over candidates within a race
                 ) ; end of (let*) statement that exp-window functions are called within
@@ -374,14 +131,16 @@
                 (setq j (+ j 1))
                 (when (> j 7) (return j)) ; more than 7 rows, break the loop
                 (when (not cntst-lst) (return j)) ;checks if we've run out of races
-                
+                    
+            
             ) ; end of row loop
             
             ; increment column index and check for break conditions
             (setq i (+ i 1))
             (when (> i 2) (return i)) ; more than 3 columns, break the loop
             (when (not cntst-lst) (return i)) ;checks if we've run out of races
-        ) ; end of column loop
+            
+        )  ; end of column loop
         
         ; this should be removed in the future; for testing only (it is called in the if statement below)
         (install-device *window*)
@@ -397,40 +156,3 @@
         )
     ) ; end of outer (let*) statement 
 ) ; end of function definition
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
