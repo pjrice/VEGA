@@ -65,9 +65,14 @@ import actr
 ##############################################################################
 # global variables
 
+# radius to apply for grouping
+groupingRadius = 8
+
+# collision method to apply during grouping
+collisionMethod = 'box'
+
 # keeping a global list of feature ids and assuming there's only one model for 
 # now. Will wrap in actr module later to handle multiple models, etc
-
 features = [] # contains a list of visicon feature IDs
 currentVisicon = [] # contains a representation of the current visicon
 
@@ -689,9 +694,9 @@ def proc_display_monitor(cmd,params,success,results):
         # radius=8 for No-Lines-Color-Box
         if noImages:
             noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
-            vgScene = visGroups(noImageVisicon,8,'box')
+            vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
         else:
-            vgScene = visGroups(currentVisicon,8,'box')
+            vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
         
         # generate and apply labels for the newly determined groups
         # label application first occurs in the python representation, and then
