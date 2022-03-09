@@ -84,6 +84,7 @@ vgPrevScene = None # the previous visual scene, grouped
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
 denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
 noImages = True # controls whether or not features that are images are considered during grouping
+modelIsVoting = False # controls whether grouping occurs while model is voting
 
 ##############################################################################
 # collision methods
@@ -689,6 +690,7 @@ def proc_display_monitor(cmd,params,success,results):
     
     try:
         
+        
         # using the list of current visicon features in currentVisicon, group
         # the scene using the specified radius and collision method
         # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
@@ -720,6 +722,7 @@ def proc_display_monitor(cmd,params,success,results):
         # display boxes around the visicon content
         if denoteGroups:
             denote_group_extent(vgScene)
+                
         
         
         
