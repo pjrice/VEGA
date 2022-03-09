@@ -39,12 +39,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Base folder name (need to set)
-(defparameter base-file-name "/Users/pjr5/gp/VEGA/")
+;(defparameter base-file-name "/Users/pjr5/gp/VEGA/")
 ;(defparameter base-file-name "/home/ausmanpa/gp/VEGA/")
-;(cond ((string= (software-type) "Darwin") (defparameter base-file-name "/Users/pjr5/gp/VEGA/")
-;       (string= (software-type) "Linux") (defparameter base-file-name "/home/ausmanpa/gp/VEGA/")
-;      )
-;)
+(cond ((string= (software-type) "Darwin") (defparameter base-file-name "/Users/pjr5/gp/VEGA/"))
+	  ((string= (software-type) "Linux") (defparameter base-file-name "/home/ausmanpa/gp/VEGA/"))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -334,7 +334,7 @@
                     )
                     
                     ; Add the background box for this race to the experiment window
-                    (add-image-to-exp-window *window* "box" "lb.gif" :x (- randomx 5) :y (- randomy 5) :width 280 :height 75)
+                    (add-image-to-exp-window *window* "box" "lb.gif" :x (- randomx 5) :y (- randomy 5) :width 280 :height 75 :clickable nil)
                     
                     ; Add the name of the contest to the experiment window
                     (add-text-to-exp-window *window* (office-name contest) :color 'red :x randomx :y randomy)

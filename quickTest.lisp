@@ -8,9 +8,9 @@
 
 
 
-(run-single '("No-Lines-Color-refactor" nil nil nil nil nil) nil nil t)
+;(run-single '("No-Lines-Color-refactor" nil nil nil nil nil) nil nil t)
 
-;(run-single '("No-Lines-Color-Box-refactor" nil nil nil nil nil) nil nil t)
+(run-single '("No-Lines-Color-Box-refactor" nil nil nil nil nil) nil nil t)
 
 ; realtime use-model visible dolog
 (vote nil nil t nil)

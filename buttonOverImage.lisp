@@ -16,7 +16,7 @@
 
     (setf *window* (open-exp-window "test" :visible t :width 1000 :height 1000))
     
-    (add-image-to-exp-window *window* "box" "lb.gif" :x 150 :y 150 :width 678 :height 574)
+    (add-image-to-exp-window *window* "box" "lb.gif" :x 150 :y 150 :width 678 :height 574 :clickable nil)
     
     (let* (
         (xCoord 50)
