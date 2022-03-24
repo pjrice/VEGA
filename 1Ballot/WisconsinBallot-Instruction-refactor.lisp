@@ -391,7 +391,7 @@ Do not use red ink."
             ; More logging
 			(setf race-sizes-column (append race-sizes-column (list current-column-sizes)))
 			(setf current-x (+ current-x column-width))
-			(setf current-y	starting-y)				
+			(setf current-y	instr-y)				
 			(when (not cntst-lst) (return)) ;checks if we've run out of races
 			(when (> current-x wwidth) (return)) ;checks if we've run out of left right room
 		) ; end of column loop
