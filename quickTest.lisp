@@ -11,8 +11,9 @@
 ;(run-single '("No-Lines-Color-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("No-Lines-Color-Box-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("WisconsinBallot-Box-refactor" nil nil nil nil nil) nil nil t)
+;(run-single '("BrowardBallot-refactor" nil nil nil nil nil) nil nil t)
 
-(run-single '("BrowardBallot-refactor" nil nil nil nil nil) nil nil t)
+(run-single '("WisconsinBallot-Instruction-refactor" nil nil nil nil nil) nil nil t)
 
 
 ; realtime use-model visible dolog
