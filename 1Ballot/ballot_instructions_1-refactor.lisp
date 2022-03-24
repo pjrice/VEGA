@@ -387,7 +387,7 @@ on ticket jointly."
 		(add-button-to-exp-window *window* :color 'white :text "" :x instr-x :y (+ instr-y 418) :width 20 :height 10)
         (add-button-to-exp-window *window* :color 'white :text "" :x instr-x :y (+ instr-y 436) :width 20 :height 10)
         
-        (add-image-to-exp-window *window* "box" "pen.gif" :x (- instr-x 30) :y (+ instr-y 390) :width 100 :height 70 :clickable nil)
+        (add-image-to-exp-window *window* "box" "pen.gif" :x (+ instr-x 30) :y (+ instr-y 390) :width 100 :height 70 :clickable nil)
         
         ; Place footer on the screen
         ; add image box for footer
