@@ -30,7 +30,8 @@
 ;(run-single '("ballot_instructions_2_nofooter-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_3-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_3_nofooter-refactor" nil nil nil nil nil) nil nil t)
-(run-single '("ballot_instructions_4-refactor" nil nil nil nil nil) nil nil t)
+;(run-single '("ballot_instructions_4-refactor" nil nil nil nil nil) nil nil t)
+(run-single '("ballot_instructions_2_plus-refactor" nil nil nil nil nil) nil nil t)
 
 
 ; realtime use-model visible dolog
