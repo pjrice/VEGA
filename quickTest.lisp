@@ -31,7 +31,7 @@
 ;(run-single '("ballot_instructions_3-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_3_nofooter-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_4-refactor" nil nil nil nil nil) nil nil t)
-(run-single '("ballot_instructions_2_plus-refactor" nil nil nil nil nil) nil nil t)
+;(run-single '("ballot_instructions_2_plus-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_4_a1-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_4_a2-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("ballot_instructions_4_a4-refactor" nil nil nil nil nil) nil nil t)
@@ -39,7 +39,9 @@
 ;(run-single '("ballot_instructions_4_plus_nofooter-refactor" nil nil nil nil nil) nil nil t)
 
 ; realtime use-model visible dolog
-(vote nil nil t nil)
+;(vote nil nil t nil)
 
 
-(run-single '("No-Lines-Color-Box-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
+;(run-single '("No-Lines-Color-Box-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
+
+(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)

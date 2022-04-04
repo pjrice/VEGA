@@ -165,8 +165,8 @@
 	;(vote realtime use-model visible t)
 	
 	;(run-program "python" '("/home/ausmanpa/gp/VEGA/visual_grouping.py") :wait nil :output nil)
-	;(run-program "konsole" '("-e" "python -i /home/ausmanpa/gp/VEGA/visual_grouping.py") :wait nil) ;Better - does not require the python while loop+(clear-all)!
-	;(vote realtime use-model visible t)
+	(run-program "konsole" '("-e" "python -i /home/ausmanpa/gp/VEGA/visual_grouping_boxFix.py") :wait nil) ;Better - does not require the python while loop+(clear-all)!
+	(vote realtime use-model visible nil)
 	;(clear-all) ; necessary to halt the python background process
 
 )
