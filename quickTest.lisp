@@ -44,4 +44,8 @@
 
 ;(run-single '("No-Lines-Color-Box-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
 
-(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
+;;; fails after first vote because move-mouse-to-bubble clears visual location buffer, then click-button fires, then find-race-title-box SHOULD fire, but fails because visual-location is empty
+;(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
+
+;;; fails without voting: productions fired: find-header; attend-header; find-header-first-line-1; attending-header-first-line. THEN, retrieving-header-first-line SHOULD fire, but it doesn't exist in the productions list - it is not defined when model is loaded!!!
+(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect" "DownEachColumn-Box-Instructions-1" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)

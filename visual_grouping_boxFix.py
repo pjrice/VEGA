@@ -82,7 +82,7 @@ vgPrevScene = None # the previous visual scene, grouped
 
 # control flags
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
-denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
+denoteGroups = False # a flag for whether or not to show the extent of the identified groups on the task window
 noImages = True # controls whether or not features that are images are considered during grouping
 modelIsVoting = False # controls whether grouping occurs while model is voting
 
@@ -681,58 +681,117 @@ actr.add_command("modvis-remove-all",all_features_removed)
 actr.monitor_command("delete-all-visicon-features","modvis-remove-all")
 
 
+# def proc_display_monitor(cmd,params,success,results):
+#     global features
+#     global currentVisicon
+#     global vgScene
+#     global vgPrevScene
+#     global modVisLock
+    
+#     try:
+        
+        
+#         # using the list of current visicon features in currentVisicon, group
+#         # the scene using the specified radius and collision method
+#         # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
+#         # radius=8 for No-Lines-Color-Box
+#         if noImages:
+#             noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
+#             vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
+#         else:
+#             vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
+        
+#         # generate and apply labels for the newly determined groups
+#         # label application first occurs in the python representation, and then
+#         # the ACT-R chunk representation of a given feature is modified so that 
+#         # a "group" slot is added with a value set to the generated group label
+#         # inherit labels from vgPrevScene if possible
+#         label_groups(vgScene,vgPrevScene)
+        
+#         # add the group label associated with each feature in the visicon to
+#         # feature's chunk representation by adding a slot named "group" with
+#         # a value set to the label
+#         modVisLock = True
+#         for visPoint in vgScene.visPoints:
+#             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
+#             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+#             actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
+#         modVisLock = False
+            
+
+#         # display boxes around the visicon content
+#         if denoteGroups:
+#             denote_group_extent(vgScene)
+                
+        
+        
+        
+#         # now that groups have been determined and we've done everything we
+#         # want with them, store the current scene as the previous scene
+#         #vgPrevScene = vgScene
+        
+        
+#     except AttributeError:
+#         raise
+
 def proc_display_monitor(cmd,params,success,results):
     global features
     global currentVisicon
     global vgScene
     global vgPrevScene
     global modVisLock
+    global modelIsVoting
     
     try:
         
+        if not modelIsVoting:
         
-        # using the list of current visicon features in currentVisicon, group
-        # the scene using the specified radius and collision method
-        # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
-        # radius=8 for No-Lines-Color-Box
-        if noImages:
-            noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
-            vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
-        else:
-            vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
         
-        # generate and apply labels for the newly determined groups
-        # label application first occurs in the python representation, and then
-        # the ACT-R chunk representation of a given feature is modified so that 
-        # a "group" slot is added with a value set to the generated group label
-        # inherit labels from vgPrevScene if possible
-        label_groups(vgScene,vgPrevScene)
+            # using the list of current visicon features in currentVisicon, group
+            # the scene using the specified radius and collision method
+            # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
+            # radius=8 for No-Lines-Color-Box
+            if noImages:
+                noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
+                vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
+            else:
+                vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
         
-        # add the group label associated with each feature in the visicon to
-        # feature's chunk representation by adding a slot named "group" with
-        # a value set to the label
-        modVisLock = True
-        for visPoint in vgScene.visPoints:
-            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-            actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
-        modVisLock = False
+            # generate and apply labels for the newly determined groups
+            # label application first occurs in the python representation, and then
+            # the ACT-R chunk representation of a given feature is modified so that 
+            # a "group" slot is added with a value set to the generated group label
+            # inherit labels from vgPrevScene if possible
+            label_groups(vgScene,vgPrevScene)
+        
+            # add the group label associated with each feature in the visicon to
+            # feature's chunk representation by adding a slot named "group" with
+            # a value set to the label
+            modVisLock = True
+            for visPoint in vgScene.visPoints:
+                #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
+                #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+                actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
+            modVisLock = False
             
 
-        # display boxes around the visicon content
-        if denoteGroups:
-            denote_group_extent(vgScene)
+            # display boxes around the visicon content
+            if denoteGroups:
+                denote_group_extent(vgScene)
+                
+            modelIsVoting = True
                 
         
         
         
-        # now that groups have been determined and we've done everything we
-        # want with them, store the current scene as the previous scene
-        #vgPrevScene = vgScene
+            # now that groups have been determined and we've done everything we
+            # want with them, store the current scene as the previous scene
+            #vgPrevScene = vgScene
         
         
     except AttributeError:
         raise
+
     
     
 actr.add_command("pd-mon",proc_display_monitor)
