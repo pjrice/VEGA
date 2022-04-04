@@ -327,7 +327,7 @@ on ticket jointly."
 	(defparameter race-parameters contest-parameters)
 
     ; Initializes the experiment window
-    (setf *window* (open-exp-window "Ballot" :visible t :x 0 :y 0 :width 800 :height 680))
+    (setf *window* (open-exp-window "Ballot" :visible t :x 0 :y 0 :width 700 :height 800))
     
     ; Initializes values that will be used to construct ballot, then loops over columns/rows to do so
     (let* (
@@ -335,7 +335,7 @@ on ticket jointly."
 		(y-spacing-after-title (nth 1 contest-parameters))
 		(y-spacing-between-candidates (nth 2 contest-parameters))
 		(wheight 800)
-		(wwidth 680)
+		(wwidth 700)
 		(instr-x 10)
         (instr-y-header 10)
         (instr-y 70)

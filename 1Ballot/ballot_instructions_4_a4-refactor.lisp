@@ -381,7 +381,7 @@ Election."
         (add-image-to-exp-window *window* "box" "lb.gif" :x (- instr-x 4) :y 175 :width 225 :height 50 :clickable nil)
         
         ;add non-race texts    
-        (add-text-to-exp-window *window* (nonrace instr) :color 'black :x (- instr-x 1) :y (- wheight 175))
+        (add-text-to-exp-window *window* (nonrace instr) :color 'black :x (- instr-x 1) :y 175)
                  
         
         ; Loop over columns on the ballot
