@@ -41,11 +41,21 @@
 ; realtime use-model visible dolog
 ;(vote nil nil t nil)
 
+;;;;;;;
+; Ballots without instructions
+;;;;;;;
+
+; fails after casting first vote; move-mouse-to-bubble clears the visual buffer; click-bubble fires; find-race-title-box does not fire because visual location buffer is empty
+; with fix to move-mouse-to-bubble, it finishes ballot
+(run-single '("No-Lines-Color-Box-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Random-Retrieve-Party" "click-closest-modified") nil t t)
+
+
 
 ;(run-single '("No-Lines-Color-Box-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
 
-;;; fails after first vote because move-mouse-to-bubble clears visual location buffer, then click-button fires, then find-race-title-box SHOULD fire, but fails because visual-location is empty
-;(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect" "Top-To-Bottom-Left-To-Right-Box" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
 
+;;;;;;;
+; Ballots with instructions
+;;;;;;;
 ;;; fails without voting: productions fired: find-header; attend-header; find-header-first-line-1; attending-header-first-line. THEN, retrieving-header-first-line SHOULD fire, but it doesn't exist in the productions list - it is not defined when model is loaded!!!
 (run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect" "DownEachColumn-Box-Instructions-1" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)

@@ -24,6 +24,9 @@
 ;;; ----- History -----
 ;;; 2019.4.28   Joshua Engels
 ;;;				: * Documented the file
+;;; 2022.4.4	Patrick Rice
+;;;				: * Modified move-mouse-to-bubble so that the visual-location buffer is not harvested (it is
+;;;					needed for find-race-title-box)
 ;;;
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -70,6 +73,8 @@
 	kind		oval
 	
 ==>
+
+=visual-location> ; added 4/4/22 by PJR because find-race-title-box was not firing after click-bubble had fired, due to empty visual-location buffer
 
 +manual>
 	ISA     move-cursor
