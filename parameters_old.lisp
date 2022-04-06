@@ -26,8 +26,8 @@
 (sgp :v t :esc t :show-focus t)
 ; (sgp :v nil :esc t :show-focus t :process-cursor nil)
 
-	
-	
+(sgp :force-visual-commands t)
+
 (sgp :visual-finst-span 10) ;neccesary to avoid forgetting where we looked for the recognition strategies
 
 (sgp :visual-num-finsts 10)
@@ -50,13 +50,11 @@
 (setf *actr-enabled-p* t)
 
 ; Declarative Memory Chunk Types
-(chunk-type MakeVote instruction keyword race candidate party button position screen state handpos to-do found default endState left right top bottom)
+(chunk-type MakeVote race candidate party button position screen state handpos to-do found default endState left right top bottom)
 (chunk-type Candidate name party race)
 (chunk-type VoteParty default)
 (chunk-type Abstain contest)
-(chunk-type Instruction keyword area)
 (chunk-type VisualGroup race-group candidate-group party-group nextpage-group nextpage-text party-text candidate-text race-text button-group)
 		
 ; First Goal and other chunks
-;(add-dm (Vote ISA FindInstr state find-instr))
 (add-dm (Vote ISA MakeVote state start-voting default "DEM" endState "nameofrace" direction rightwards anchor nil) (anchor) (direction) (leftwards) (rightwards))
