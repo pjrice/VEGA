@@ -23,7 +23,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Parameters
-(sgp :v t :esc t :show-focus t)
+(sgp :v t :esc t :show-focus t :force-visual-commands t)
 ; (sgp :v nil :esc t :show-focus t :process-cursor nil)
 
 	
