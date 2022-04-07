@@ -86,9 +86,36 @@
 ;;----------------------------------------  test non-race content ---------------------------------------
 
 ;down-each-column (version A: cursory strategies) (1:basic down-each-column  2:snake;   3:middle,right,left   4:middle,left,right)
+
 ;top-instruction ballot
 ; this works!
 (run-single '("ballot_instructions_4_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A1" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
 
+; fails; find-loc-failure in encode-race production
+(run-single '("ballot_instructions_4_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A2" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+;left-instruction ballot
+; this works!
+(run-single '("ballot_instructions_2_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A1" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+; fails; find-loc-failure in encode-race production
+(run-single '("ballot_instructions_2_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A2" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+; this works!
+(run-single '("ballot_instructions_2_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A3" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+; this works!
+(run-single '("ballot_instructions_2_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A4" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+; this works; did last column from bottom up?
+(run-single '("ballot_instructions_1-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A2" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
 
 
+;ballot with no footer
+; this works
+(run-single '("ballot_instructions_4_plus_nofooter-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A1" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+; this works
+(run-single '("ballot_instructions_2_nofooter-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A3" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
+
+; ;------down-each-column (version B: thorough strategies)  (1:basic down-each-column  2:snake;   3:middle,right,left   4:middle,left,right) ------ ; ;
