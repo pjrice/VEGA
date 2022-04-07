@@ -78,13 +78,17 @@
 ; fails; gets stuck trying to find the header
 (run-single '("BrowardBallot-refactor" "all-perfect-broward" "DownEachColumn-Box-Instructions-2" "Relative-Positions-Color" "VG-Random-Recognize-Party" "click-closest-modified")nil t t)
 
-; don't have an all-perfect-longwisconsin memory file
-(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions2" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")t t t)
+; when trying to find the instructions, attends to first race instead and gets stuck
+(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-2" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")t t t)
 
-; a lot of her tests in test2.lisp require the all-perfect-longwisconsin memory file
 
-; don't have ReadingOrder-Box-Instructions2
-(run-single '("BrowardBallot-refactor" "all-perfect-broward" "ReadingOrder-Box-Instructions2" "Relative-Positions-Color" "VG-Random-Recognize-Party" "click-closest-modified")nil t t)
+
+;;----------------------------------------  test non-race content ---------------------------------------
+
+;down-each-column (version A: cursory strategies) (1:basic down-each-column  2:snake;   3:middle,right,left   4:middle,left,right)
+;top-instruction ballot
+; this works!
+(run-single '("ballot_instructions_4_plus-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions-A1" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")nil t t)
 
 
 

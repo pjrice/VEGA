@@ -497,9 +497,11 @@ def reset ():
     global currentVisicon
     global vgScene
     global vgPrevScene
+    global modelIsVoting
 
     features = []
     currentVisicon = []
+    modelIsVoting = False
     
    
 # add this function as an actr command, so that it can be monitored
