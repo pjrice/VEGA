@@ -56,66 +56,6 @@
 (Turn ISA Instruction keyword "turn" area "Footer")
 ;(Over ISA Instruction keyword "over" area "Footer")
 
-
-
-; Chunk base-level activations for non-race content
-(sdp Ballot :base-level 10)
-(sdp Style :base-level 10)
-(sdp County :base-level 10)
-(sdp November :base-level 10)
-(sdp Day :base-level 10)
-(sdp Year :base-level 10)
-(sdp Kewaunee :base-level 10)
-(sdp State :base-level 10)
-(sdp Wisconsin :base-level 10)
-
-(sdp Instr :base-level 10)
-(sdp Instrs :base-level 10)
-(sdp Initialed :base-level 10)
-(sdp Official :base-level 10)
-(sdp General :base-level 10)
-(sdp Election :base-level 10)
-(sdp Referendum :base-level 10)
-(sdp Notice :base-level 10)
-(sdp Electors :base-level 10)
-(sdp Vote :base-level 10)
-(sdp Blacken :base-level 10)
-(sdp Oval :base-level 10)
-(sdp Write :base-level 10)
-
-(sdp Party :base-level 10)
-(sdp Absentee :base-level 10)
-(sdp Ticket :base-level 10)
-(sdp Congressional :base-level 10)
-(sdp Legistiative :base-level 10)
-(sdp Clerk :base-level 10)
-(sdp Deputy :base-level 10)
-(sdp Manucipal :base-level 10)
-(sdp Line :base-level 10)
-(sdp Important :base-level 10)
-(sdp Left :base-level 10)
-(sdp Legistiative :base-level 10)
-(sdp Independent :base-level 10)
-(sdp Candidates :base-level 10)
-(sdp Person :base-level 10)
-
-;(sdp Of :base-level 20)
-;(sdp Th :base-level 20)
-(sdp Jointly :base-level 10)
-(sdp Only :base-level 10)
-(sdp Name :base-level 10)
-;(sdp For :base-level 20)
-
-;(sdp To :base-level 20)
-(sdp Carlton :base-level 10)
-(sdp Town :base-level 10)
-(sdp Continue :base-level 10)
-(sdp Voting :base-level 10)
-(sdp Please :base-level 10)
-(sdp Turn :base-level 10)
-(sdp Over :base-level 10)
-
-
 ;; candidates
 ;;wisconsin error
 (ScottMcCallum ISA Candidate name "ScottMcCallum" party "REP" race "GovernorLieutenantGovernor")
@@ -185,6 +125,65 @@
 
 
 ; no Activations for other candidates
+
+
+; Chunk base-level activations for non-race content
+(sdp Ballot :base-level 10)
+(sdp Style :base-level 10)
+(sdp County :base-level 10)
+(sdp November :base-level 10)
+(sdp Day :base-level 10)
+(sdp Year :base-level 10)
+(sdp Kewaunee :base-level 10)
+(sdp State :base-level 10)
+(sdp Wisconsin :base-level 10)
+
+(sdp Instr :base-level 10)
+(sdp Instrs :base-level 10)
+(sdp Initialed :base-level 10)
+(sdp Official :base-level 10)
+(sdp General :base-level 10)
+(sdp Election :base-level 10)
+(sdp Referendum :base-level 10)
+(sdp Notice :base-level 10)
+(sdp Electors :base-level 10)
+(sdp Vote :base-level 10)
+(sdp Blacken :base-level 10)
+(sdp Oval :base-level 10)
+(sdp Write :base-level 10)
+
+(sdp Party :base-level 10)
+(sdp Absentee :base-level 10)
+(sdp Ticket :base-level 10)
+(sdp Congressional :base-level 10)
+(sdp Legistiative :base-level 10)
+(sdp Clerk :base-level 10)
+(sdp Deputy :base-level 10)
+(sdp Manucipal :base-level 10)
+(sdp Line :base-level 10)
+(sdp Important :base-level 10)
+(sdp Left :base-level 10)
+(sdp Legistiative :base-level 10)
+(sdp Independent :base-level 10)
+(sdp Candidates :base-level 10)
+(sdp Person :base-level 10)
+
+;(sdp Of :base-level 20)
+;(sdp Th :base-level 20)
+(sdp Jointly :base-level 10)
+(sdp Only :base-level 10)
+(sdp Name :base-level 10)
+;(sdp For :base-level 20)
+
+;(sdp To :base-level 20)
+(sdp Carlton :base-level 10)
+(sdp Town :base-level 10)
+(sdp Continue :base-level 10)
+(sdp Voting :base-level 10)
+(sdp Please :base-level 10)
+(sdp Turn :base-level 10)
+(sdp Over :base-level 10)
+
 
 
 
