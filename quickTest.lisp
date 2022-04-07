@@ -72,10 +72,19 @@
 
 ;;;;;;;
 ; Ballots with instructions
+; From Xianni's test2.lisp file
 ;;;;;;;
 
-(run-single '("BrowardBallot-refactor" "all-perfect" "DownEachColumn-Box-Instructions-1" "Relative-Positions-Color" "VG-Random-Retrieve-Party" "click-closest-modified") nil t t)
+; fails; gets stuck trying to find the header
+(run-single '("BrowardBallot-refactor" "all-perfect-broward" "DownEachColumn-Box-Instructions-2" "Relative-Positions-Color" "VG-Random-Recognize-Party" "click-closest-modified")nil t t)
+
+; don't have an all-perfect-longwisconsin memory file
+(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect-longwisconsin" "DownEachColumn-Box-Instructions2" "Relative-Positions-Color" "VG-Serial-Recognize-Party" "click-closest-modified")t t t)
+
+; a lot of her tests in test2.lisp require the all-perfect-longwisconsin memory file
+
+; don't have ReadingOrder-Box-Instructions2
+(run-single '("BrowardBallot-refactor" "all-perfect-broward" "ReadingOrder-Box-Instructions2" "Relative-Positions-Color" "VG-Random-Recognize-Party" "click-closest-modified")nil t t)
 
 
-;;; fails without voting: productions fired: find-header; attend-header; find-header-first-line-1; attending-header-first-line. THEN, retrieving-header-first-line SHOULD fire, but it doesn't exist in the productions list - it is not defined when model is loaded!!!
-(run-single '("WisconsinBallot-Instruction-Long-refactor" "all-perfect-nonrace" "DownEachColumn-Box-Instructions-1" "Relative-Positions-Color" "VG-Serial-Retrieve-Party" "click-closest-modified") t t t)
+
