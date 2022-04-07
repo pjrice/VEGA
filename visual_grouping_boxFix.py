@@ -497,11 +497,9 @@ def reset ():
     global currentVisicon
     global vgScene
     global vgPrevScene
-    global modelIsVoting
 
     features = []
     currentVisicon = []
-    modelIsVoting = False
     
    
 # add this function as an actr command, so that it can be monitored
@@ -657,13 +655,17 @@ def features_removed(cmd,params,success,results):
     global currentVisicon
     global vgScene
     global vgPrevScene
+    global modelIsVoting
     
-
     for f in results[0]:
         features.remove(f)
         
         featIdx = [x for x in range(len(currentVisicon)) if currentVisicon[x][0]==f]
         del currentVisicon[featIdx[0]]
+        
+    if len(features)==0 and len(currentVisicon)==0:
+        modelIsVoting = False
+    
         
 
 actr.add_command("modvis-remove",features_removed)
