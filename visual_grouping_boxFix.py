@@ -573,10 +573,10 @@ def features_added(cmd,params,success,results):
             actr.modify_visicon_features([results[0][idx],'WIDTH',widthVal])
             modVisLock = False
             
-        #compute the left/right/top/bottom boundaries that are used by the models
+        # compute the left/right/top/bottom boundaries that are used by the models
         boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
         
-        #modify the visicon entry for this feature with the computed boundaries
+        # modify the visicon entry for this feature with the computed boundaries
         modVisLock = True
         actr.modify_visicon_features([results[0][idx],"screen-left",boundaries["SCREEN-LEFT"],
                                                               "screen-right",boundaries["SCREEN-RIGHT"],
@@ -609,6 +609,7 @@ def features_modified(cmd,params,success,results):
     global modVisLock
     
     if modVisLock:
+        #print('pass')
         pass
     else:
         # find the indices of the modified features in the currentVisicon
@@ -616,23 +617,74 @@ def features_modified(cmd,params,success,results):
         for f in results[0]:
             modFeatIdxs.append(next(i for i,v in enumerate(currentVisicon) if f in v))
             
-        print(modFeatIdxs)
+        #print(modFeatIdxs)
         
         # update currentVisicon to reflect the modifications to the modified features
         for i in range(len(modFeatIdxs)):
             
             # currentVisicon index of the feature we're modifying
             cvIdx = modFeatIdxs[i]
+            print(cvIdx)
             
             # list of the attributes that were modified for this feature - this includes added and deleted attributes
             moddedAttrs = params[i][1::2]
-            print(moddedAttrs)
+            #print(moddedAttrs)
             
             # list of the new values of the modified attributes - this includes added and deleted attribute values
             newAttrVals = params[i][2::2]
-            print(newAttrVals)
+            #print(newAttrVals)
             
-            # go through the currentVisicon feature representation and determine which were changed, added, deleted
+            # go through the currentVisicon feature representation and update with new values
+            for moddedAttrPair in zip(moddedAttrs,newAttrVals):
+                # determine if the modified attribute already exists in the feature or if it's new
+                if moddedAttrPair[0] in currentVisicon[cvIdx]:
+                    # since attr already exists,get index of the value of the modified attribute 
+                    # of the feature that was modified
+                    maIdx = currentVisicon[cvIdx].index(moddedAttrPair[0])+1
+                    # update attribute with new value
+                    if (moddedAttrPair[0]=='HEIGHT' or moddedAttrPair[0]=='WIDTH') and moddedAttrPair[1] is None:
+                        # height or width attr was removed, so instead assume a value of 1 as in features_added()
+                        currentVisicon[cvIdx][maIdx] = 1
+                    else:
+                        currentVisicon[cvIdx][maIdx] = moddedAttrPair[1]
+                else:
+                    # attribute is new, so append it
+                    currentVisicon[cvIdx].append(moddedAttrPair[0])
+                    currentVisicon[cvIdx].append(moddedAttrPair[1])
+                    
+            # if X/Y/height/width were changed, recompute screen-left/right/top/bottom and update
+            if any(item in moddedAttrs for item in ['SCREEN-X','SCREEN-Y','HEIGHT','WIDTH']):
+                
+                xValIdx = currentVisicon[cvIdx].index('SCREEN-X')+1
+                yValIdx = currentVisicon[cvIdx].index('SCREEN-Y')+1
+                heightValIdx = currentVisicon[cvIdx].index('HEIGHT')+1
+                widthValIdx = currentVisicon[cvIdx].index('WIDTH')+1
+                
+                screenXVal = currentVisicon[cvIdx][xValIdx]
+                screenYVal = currentVisicon[cvIdx][yValIdx]
+                heightVal = currentVisicon[cvIdx][heightValIdx]
+                widthVal = currentVisicon[cvIdx][widthValIdx]
+                
+                # compute the left/right/top/bottom boundaries that are used by the models
+                boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
+                
+                # update the currentVisicon representation with the new values
+                for attr in ['SCREEN-LEFT','SCREEN-RIGHT','SCREEN-TOP','SCREEN-BOTTOM']:
+                    attrIdx = currentVisicon[cvIdx].index(attr)+1
+                    currentVisicon[cvIdx][attrIdx] = boundaries[attr]
+                
+                # modify the visicon entry for this feature with the computed boundaries
+                # modVisLock = True
+                # print(modVisLock)
+                # actr.modify_visicon_features([currentVisicon[cvIdx][0],
+                #                               "screen-left",boundaries["SCREEN-LEFT"],
+                #                               "screen-right",boundaries["SCREEN-RIGHT"],
+                #                               "screen-top",boundaries["SCREEN-TOP"],
+                #                               "screen-bottom",boundaries["SCREEN-BOTTOM"]])
+                # modVisLock = False
+                
+                    
+            
             
             
             
@@ -833,7 +885,8 @@ def test():
     actr.add_visicon_features(['SCREEN-X',0,'SCREEN-Y',0],
                               ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12],
                               ['SCREEN-X',0,'SCREEN-Y',0,'WIDTH',12],
-                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12])
+                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12],
+                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12,'COLOR','blue'])
     
     
     
@@ -841,6 +894,12 @@ def test():
     actr.modify_visicon_features([features[0],"SCREEN-X",100], #just change an attribute
                                  [features[2],"SCREEN-X",100, 'WIDTH',None], #change an attribute and delete an attribute
                                  [features[4],"SCREEN-X",100, "GROUP",'test']) #change an attribute and add an attribute
+
+
+    # test changing/deleting/adding attributes w/ (modify-visicon-features) from ACT-R environment to see how monitor handles it
+    actr.modify_visicon_features([features[0],"SCREEN-X",100,"SCREEN-Y",120,"COLOR","red"],
+                                 [features[2],"SCREEN-X",100, 'WIDTH',None], 
+                                 [features[4],"SCREEN-X",100, "HEIGHT",20,"GROUP",'test'])
 
     
     #actr.delete_visicon_features(ids[1])
