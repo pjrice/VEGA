@@ -674,6 +674,9 @@ def features_modified(cmd,params,success,results):
                     currentVisicon[cvIdx][attrIdx] = boundaries[attr]
                 
                 # modify the visicon entry for this feature with the computed boundaries
+                # I think this might not work because the modify-visicon-features call that triggered this monitor
+                # is still pending/scheduled/outstanding in the ACT-R dispatcher, so the one that is scheduled by the 
+                # actr.modify_visicon_features call below does not fire, and we hang?
                 # modVisLock = True
                 # print(modVisLock)
                 # actr.modify_visicon_features([currentVisicon[cvIdx][0],
