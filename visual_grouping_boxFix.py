@@ -417,16 +417,18 @@ def inherit_group_labels(groupedScene,prevGroupedScene):
                 collisions[newPoint.groupIdx,oldPoint.groupIdx] += 1
                 
     for newGrpIdx in range(0,groupedScene.groupCount):
-        numNewHits = np.sum(collisions[newGrpIdx,:])
+        # get the number of old groups that contain points that collide with points of the new group
+        numNewHits = np.sum([1 if x>0 else 0 for x in collisions[newGrpIdx,:]])
         inheritedName = None
         
         for oldGrpIdx in range(0,prevGroupedScene.groupCount):
             if inheritedName is None:
-                numOldHits = np.sum(collisions[:,oldGrpIdx])
+                # get the number of new groups that contain points that collide with points of the old group
+                numOldHits= np.sum([1 if x>0 else 0 for x in collisions[:,oldGrpIdx]])
                 numPtHits = collisions[newGrpIdx,oldGrpIdx]
                 
                 if (numOldHits==1 and numNewHits==1 and numPtHits > 0):
-                    inheritedName = prevGroupedScene.groupNames[oldGroupIdx]
+                    inheritedName = prevGroupedScene.groupNames[oldGrpIdx]
                     
         if inheritedName is not None:
             newNames.append(inheritedName)
