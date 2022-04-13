@@ -12,7 +12,11 @@ for partFolder in $(ls data); do
         
         # convert packet scan pdf pages to jpgs
         echo "Converting pdf pages to jpgs for participant $partFolder..."
-        #pdftoppm -jpeg -r 300 $packetPDF data/$partFolder/output
+        pdftoppm -jpeg -r 300 $packetPDF data/$partFolder/output
+        
+        if [ $partFolder != "001" ]; then
+            rm data/$partFolder/output-01.jpg
+        fi
         
         # get filenames of created jpgs into array
         jpgFilenames=($(ls -d data/$partFolder/*.jpg))
@@ -24,15 +28,15 @@ for partFolder in $(ls data); do
         
         
         # rename the jpg files to be reflective of the stimuli
-        #if [ "${#jpgFilenames[@]}" -eq "${#new_jpgFilenames[@]}" ]; then
-        #    echo "Existing files and new names are of equal length - all good"
-        #    for (( i = 0 ; i < ${#jpgFilenames[@]} ; i++ )); do
-        #        #echo "filename was ${jpgFilenames[$i]}, will be "${new_jpgFilenames[$i]:0:6}.jpg""
-        #        mv ${jpgFilenames[$i]} "data/$partFolder/${new_jpgFilenames[$i]:0:6}.jpg"
-        #    done
-        #else
-        #    echo "WARNING: Existing files and new names are NOT of equal length - files will not be renamed!!!"
-        #fi
+        if [ "${#jpgFilenames[@]}" -eq "${#new_jpgFilenames[@]}" ]; then
+            echo "Existing files and new names are of equal length - all good"
+            for (( i = 0 ; i < ${#jpgFilenames[@]} ; i++ )); do
+                echo "filename was ${jpgFilenames[$i]}, will be "${new_jpgFilenames[$i]:0:6}.jpg""
+                mv ${jpgFilenames[$i]} "data/$partFolder/${new_jpgFilenames[$i]:0:6}.jpg"
+            done
+        else
+            echo "WARNING: Existing files and new names are NOT of equal length - files will not be renamed!!!"
+        fi
 
     fi
 done

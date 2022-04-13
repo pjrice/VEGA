@@ -1,5 +1,5 @@
 
-
+import os
 import cv2
 import glob
 import numpy as np
@@ -18,7 +18,9 @@ def blend(list_images): # Blend images equally.
     return output
 
 
-participants = ['001', '002', '004', '005', '006', '007', '009', '011', '012', '013', '014', '015']
+participants = next(os.walk('/home/ausmanpa/gp/VEGA/experiments/E01/data/.'))[1]
+
+participants = [part for part in participants if len(glob.glob('/home/ausmanpa/gp/VEGA/experiments/E01/data/'+part+'/*.jpg'))==34]
 
 stimFNames = glob.glob('/home/ausmanpa/gp/VEGA/experiments/E01/data/001/*.jpg')
 
