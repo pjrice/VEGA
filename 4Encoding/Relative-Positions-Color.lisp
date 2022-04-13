@@ -10,12 +10,13 @@
 	value		=text
 	
 =visual-location>
-	ISA				visual-location	
+	ISA			visual-location	
 	kind			text
 	group			=group1
 	screen-left		=current-left
-	screen-right	=current-right
-
+	screen-right	        =current-right
+        screen-top	        =current-top
+        screen-bottom           =current-bottom
 
 =imaginal>
 	race-group	none
@@ -23,11 +24,14 @@
 ==>
 
 +visual-location>
-	ISA				visual-location
-	> screen-y		current
-	:nearest		current
-	> screen-right	=current-left
-	< screen-left	=current-right
+	ISA			visual-location
+        ;> screen-top            =current-top
+        ;< screen-bottom         =current-bottom
+	;>= screen-y		current
+
+	;<= screen-x	        =current-left
+	<= screen-x	        =current-right
+        :nearest		current
 	kind			oval
 	
 =imaginal>
@@ -79,7 +83,7 @@
 ==>
 
 +visual-location>
-	ISA			visual-location
+	ISA		visual-location
 	kind		oval
 	group		=button-group
 	color		black
@@ -97,15 +101,18 @@
 	state		find-clicked-button
 
 =visual-location>
-	ISA			visual-location	
+	ISA		visual-location	
 	kind		oval
 	
 =visual>
 
-?visual>
-	state		free
+;?visual>
+;	state		free
 	
 ==>
+=visual>
+
+=visual-location>
 
 
 =goal>
@@ -113,7 +120,7 @@
 
 )
 
-;; We have already voted, send back to macronavigation
+;; We have already voted, send back to micronavigation
 (P Not-Already-Voted
 
 =goal>
@@ -130,7 +137,7 @@
 
 
 +visual-location>
-	ISA			visual-location
+	ISA		visual-location
 	color		purple
 	:nearest	current
 	= screen-y	current
@@ -147,7 +154,7 @@
 	state		find-candidate-group
 
 =visual-location>
-	ISA			visual-location	
+	ISA		visual-location	
 	kind		text
 
 ?visual>
@@ -156,7 +163,7 @@
 ==>
 
 +visual>
-	ISA			move-attention
+	ISA		move-attention
 	screen-pos	=visual-location
 	
 =visual-location>
@@ -176,19 +183,19 @@
 	value		=text
 
 =visual-location>
-	ISA			visual-location	
+	ISA		visual-location	
 	kind		text
 	group		=group2
 
 =imaginal>
 	- race-group	none
 	candidate-group	none
-	race-group		=race-group
+	race-group	=race-group
 
 ==>
 
 +visual-location>
-	ISA			visual-location
+	ISA		visual-location
 	kind		text
 	:nearest	current
 	= screen-y	current
@@ -212,7 +219,7 @@
 	state		find-party-group
 
 =visual-location>
-	ISA			visual-location	
+	ISA		visual-location	
 	kind		text
 	; width		=width
 	; screen-x	=middle-x
@@ -246,14 +253,14 @@
 	state		free
 	
 =visual-location>
-	ISA			visual-location	
+	ISA		visual-location	
 	kind		text
 	group		=group3
 
 =imaginal>
 	- race-group		none
 	- candidate-group	none
-	party-group			none
+	party-group		none
 	
 
 ==>
@@ -262,7 +269,7 @@
 	party-group  =group3
  
 =goal>
-	state		ready-to-make-choice
+	state	     ready-to-make-choice
 	
 +visual>
 	ISA     clear-all-finsts
@@ -271,3 +278,18 @@
 	
 )
 
+;for example race without party group
+(P Find-Party-Failure
+
+ =goal>
+	state   	find-party-group
+
+?visual-location>
+	buffer		failure	
+
+==>
+ 
+=goal>
+	state	     ready-to-make-choice
+   
+)
