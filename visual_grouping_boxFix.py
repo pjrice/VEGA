@@ -653,6 +653,9 @@ def features_modified(cmd,params,success,results):
                     if (moddedAttrPair[0]=='HEIGHT' or moddedAttrPair[0]=='WIDTH') and moddedAttrPair[1] is None:
                         # height or width attr was removed, so instead assume a value of 1 as in features_added()
                         currentVisicon[cvIdx][maIdx] = 1
+                        # update ACT-R visicon with this assumption
+                        modVisArgList = [currentVisicon[cvIdx][0],moddedAttrPair[0],1]
+                        threading.Thread(target=call_modify_visicon_features, args=(modVisArgList,), daemon=True).start()
                     else:
                         currentVisicon[cvIdx][maIdx] = moddedAttrPair[1]
                 else:
