@@ -46,6 +46,7 @@
 import sys
 import time
 import math
+import threading
 import warnings
 import numpy as np
 
@@ -451,6 +452,16 @@ def compute_boundaries(screenX,screenY,height,width):
 
     return boundDict    
 
+# function to modify visicon features from within the modify-visicon-features 
+# monitor (called in another thread with threading.Thread)
+def call_modify_visicon_features(modVisArgList):
+    global modVisLock
+    
+    modVisLock = True
+    actr.modify_visicon_features(modVisArgList)
+    modVisLock = False
+                
+
 ##############################################################################
 # Utility to mark extent of groups on experiment window
         
@@ -611,7 +622,6 @@ def features_modified(cmd,params,success,results):
     global modVisLock
     
     if modVisLock:
-        #print('pass')
         pass
     else:
         # find the indices of the modified features in the currentVisicon
@@ -619,22 +629,18 @@ def features_modified(cmd,params,success,results):
         for f in results[0]:
             modFeatIdxs.append(next(i for i,v in enumerate(currentVisicon) if f in v))
             
-        #print(modFeatIdxs)
         
         # update currentVisicon to reflect the modifications to the modified features
         for i in range(len(modFeatIdxs)):
             
             # currentVisicon index of the feature we're modifying
             cvIdx = modFeatIdxs[i]
-            print(cvIdx)
             
             # list of the attributes that were modified for this feature - this includes added and deleted attributes
             moddedAttrs = params[i][1::2]
-            #print(moddedAttrs)
             
             # list of the new values of the modified attributes - this includes added and deleted attribute values
             newAttrVals = params[i][2::2]
-            #print(newAttrVals)
             
             # go through the currentVisicon feature representation and update with new values
             for moddedAttrPair in zip(moddedAttrs,newAttrVals):
@@ -676,29 +682,15 @@ def features_modified(cmd,params,success,results):
                     currentVisicon[cvIdx][attrIdx] = boundaries[attr]
                 
                 # modify the visicon entry for this feature with the computed boundaries
-                # I think this might not work because the modify-visicon-features call that triggered this monitor
-                # is still pending/scheduled/outstanding in the ACT-R dispatcher, so the one that is scheduled by the 
-                # actr.modify_visicon_features call below does not fire, and we hang?
-                # modVisLock = True
-                # print(modVisLock)
-                # actr.modify_visicon_features([currentVisicon[cvIdx][0],
-                #                               "screen-left",boundaries["SCREEN-LEFT"],
-                #                               "screen-right",boundaries["SCREEN-RIGHT"],
-                #                               "screen-top",boundaries["SCREEN-TOP"],
-                #                               "screen-bottom",boundaries["SCREEN-BOTTOM"]])
-                # modVisLock = False
+                # has to be done in another thread otherwise this will just hang waiting for the 
+                # modify-visicon-features call that triggered this to finish
+                modVisArgList = [currentVisicon[cvIdx][0],
+                                 "screen-left",boundaries["SCREEN-LEFT"],
+                                 "screen-right",boundaries["SCREEN-RIGHT"],
+                                 "screen-top",boundaries["SCREEN-TOP"],
+                                 "screen-bottom",boundaries["SCREEN-BOTTOM"]]
+                threading.Thread(target=call_modify_visicon_features, args=(modVisArgList,), daemon=True).start()
                 
-                    
-            
-            
-            
-            
-        
-        # determine new attributes, changed attributes, and deleted attributes
-        #for p in params:
-        #    print(p)
-            
-        
         
     
 
@@ -896,9 +888,9 @@ def test():
     
     
     # test changing/deleting/adding attributes w/ (modify-visicon-features) from ACT-R environment to see how monitor handles it
-    actr.modify_visicon_features([features[0],"SCREEN-X",100], #just change an attribute
-                                 [features[2],"SCREEN-X",100, 'WIDTH',None], #change an attribute and delete an attribute
-                                 [features[4],"SCREEN-X",100, "GROUP",'test']) #change an attribute and add an attribute
+    actr.modify_visicon_features([currentVisicon[0][0],"SCREEN-X",100], #just change an attribute
+                                 [currentVisicon[2][0],"SCREEN-X",100, 'WIDTH',None], #change an attribute and delete an attribute
+                                 [currentVisicon[4][0],"SCREEN-X",100, "GROUP",'test']) #change an attribute and add an attribute
 
 
     # test changing/deleting/adding attributes w/ (modify-visicon-features) from ACT-R environment to see how monitor handles it
