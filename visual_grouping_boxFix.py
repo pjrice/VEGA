@@ -871,7 +871,7 @@ def test():
     
     actr.set_parameter_value(':force-visual-commands',True)
     
-    
+    plt.axis([-0.1,1.1,1.1,-0.1])
     
 
 
