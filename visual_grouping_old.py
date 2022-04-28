@@ -46,7 +46,6 @@
 import sys
 import time
 import math
-import threading
 import warnings
 import numpy as np
 
@@ -74,7 +73,6 @@ collisionMethod = 'box'
 
 # keeping a global list of feature ids and assuming there's only one model for 
 # now. Will wrap in actr module later to handle multiple models, etc
-
 features = [] # contains a list of visicon feature IDs
 currentVisicon = [] # contains a representation of the current visicon
 
@@ -83,9 +81,8 @@ vgPrevScene = None # the previous visual scene, grouped
 
 # control flags
 modVisLock = False # a flag to prevent the modify-visicon-features monitor from firing if it is being called from this script
-denoteGroups = False # a flag for whether or not to show the extent of the identified groups on the task window
+denoteGroups = True # a flag for whether or not to show the extent of the identified groups on the task window
 noImages = True # controls whether or not features that are images are considered during grouping
-modelIsVoting = False # controls whether grouping occurs while model is voting
 
 ##############################################################################
 # collision methods
@@ -151,7 +148,7 @@ def box_collision(argDict):
     # p2's box)
     target = box_nearest_pt(p1,p2)
     
-    # defines a box around p1
+    # defines a box around p1, and determines whether 
     p1x = getattr(p1,'SCREEN-X')
     p1y = getattr(p1,'SCREEN-Y')
     p1w = getattr(p1,'WIDTH')
@@ -159,8 +156,8 @@ def box_collision(argDict):
         
     leftEdge = p1x - (p1w/2)
     rightEdge = p1x + (p1w/2)
-    topEdge = p1y - (p1h/2)
-    bottomEdge = p1y + (p1h/2)
+    bottomEdge = p1y - (p1h/2) #potentially incorrect
+    topEdge = p1y + (p1h/2) #potentially incorrect
     
     
     # in John's words: "if there was a target, check it, otherwise we are overlapping and just return T"
@@ -171,8 +168,8 @@ def box_collision(argDict):
         
         # if the target point's x position is within the left and right edges of point1's box, and the target point's y position is within the top/bottom edges padded by the given radius,
         # it's a hit vertically. hitHorz is the same vice-versa: within the top/bottom edge, and within the left/right edges padded by the given radius
-        hitVert = (tx >= leftEdge) and (tx <= rightEdge) and (ty >= (topEdge-radius)) and (ty <= (bottomEdge+radius))
-        hitHorz = (tx >= (leftEdge-radius)) and (tx <= (rightEdge+radius)) and (ty >= topEdge) and (ty <= bottomEdge)
+        hitVert = (tx >= leftEdge) and (tx <= rightEdge) and (ty <= (topEdge+radius)) and (ty >= (bottomEdge-radius))
+        hitHorz = (tx >= (leftEdge-radius)) and (tx <= (rightEdge+radius)) and (ty <= topEdge) and (ty >= bottomEdge)
         
         # for top/bottom left/right hits, draws a circle of radius equal to the given radius around each corner of p1's box, hit if the target falls within the circle?
         hitTopLeft = (xy_euclidian_distance((leftEdge,topEdge),(tx,ty)) <= radius)
@@ -208,28 +205,28 @@ def box_nearest_pt(originPt,targetPt):
         
     leftEdge = targetX - (targetWidth/2)
     rightEdge = targetX + (targetWidth/2)
-    topEdge = targetY - (targetHeight/2)
-    bottomEdge = targetY + (targetHeight/2)
+    bottomEdge = targetY - (targetHeight/2)
+    topEdge = targetY + (targetHeight/2)
     
     # first four if statements check if origin point is outside of left/right
     # edges AND top/bottom edges;
     # second four if statements check if origin point is OUTSIDE of left/right
     # edge and WITHIN the top/bottom edges, or vice-versa
-    if (originX < leftEdge) and (originY > bottomEdge):
+    if (originX < leftEdge) and (originY < bottomEdge):
         closestPt = (leftEdge,bottomEdge)
-    elif (originX < leftEdge) and (originY < topEdge):
+    elif (originX < leftEdge) and (originY > topEdge):
         closestPt = (leftEdge,topEdge)
-    elif (originX > rightEdge) and (originY > bottomEdge):
+    elif (originX > rightEdge) and (originY < bottomEdge):
         closestPt = (rightEdge,bottomEdge)
-    elif (originX > rightEdge) and (originY < topEdge):
+    elif (originX > rightEdge) and (originY > topEdge):
         closestPt = (rightEdge,topEdge)
-    elif (originX < leftEdge) and (originY <= bottomEdge) and (originY >= topEdge):
+    elif (originX < leftEdge) and (originY >= bottomEdge) and (originY <= topEdge):
         closestPt = (leftEdge, originY)
-    elif (originX > rightEdge) and (originY <= bottomEdge) and (originY >= topEdge):
+    elif (originX > rightEdge) and (originY >= bottomEdge) and (originY <= topEdge):
         closestPt = (rightEdge,originY)
-    elif (originY < topEdge) and (originX >= leftEdge) and (originX <= rightEdge):
+    elif (originY > topEdge) and (originX >= leftEdge) and (originX <= rightEdge):
         closestPt = (originX,topEdge)
-    elif (originY > bottomEdge) and (originX >= leftEdge) and (originX <= rightEdge):
+    elif (originY < bottomEdge) and (originX >= leftEdge) and (originX <= rightEdge):
         closestPt = (originX,bottomEdge)
     else:
         closestPt = False
@@ -418,18 +415,16 @@ def inherit_group_labels(groupedScene,prevGroupedScene):
                 collisions[newPoint.groupIdx,oldPoint.groupIdx] += 1
                 
     for newGrpIdx in range(0,groupedScene.groupCount):
-        # get the number of old groups that contain points that collide with points of the new group
-        numNewHits = np.sum([1 if x>0 else 0 for x in collisions[newGrpIdx,:]])
+        numNewHits = np.sum(collisions[newGrpIdx,:])
         inheritedName = None
         
         for oldGrpIdx in range(0,prevGroupedScene.groupCount):
             if inheritedName is None:
-                # get the number of new groups that contain points that collide with points of the old group
-                numOldHits= np.sum([1 if x>0 else 0 for x in collisions[:,oldGrpIdx]])
+                numOldHits = np.sum(collisions[:,oldGrpIdx])
                 numPtHits = collisions[newGrpIdx,oldGrpIdx]
                 
                 if (numOldHits==1 and numNewHits==1 and numPtHits > 0):
-                    inheritedName = prevGroupedScene.groupNames[oldGrpIdx]
+                    inheritedName = prevGroupedScene.groupNames[oldGroupIdx]
                     
         if inheritedName is not None:
             newNames.append(inheritedName)
@@ -451,16 +446,6 @@ def compute_boundaries(screenX,screenY,height,width):
     boundDict["SCREEN-BOTTOM"] = int(((screenY + (height/2))//2)*2)
 
     return boundDict    
-
-# function to modify visicon features from within the modify-visicon-features 
-# monitor (called in another thread with threading.Thread)
-def call_modify_visicon_features(modVisArgList):
-    global modVisLock
-    
-    modVisLock = True
-    actr.modify_visicon_features(modVisArgList)
-    modVisLock = False
-                
 
 ##############################################################################
 # Utility to mark extent of groups on experiment window
@@ -586,10 +571,10 @@ def features_added(cmd,params,success,results):
             actr.modify_visicon_features([results[0][idx],'WIDTH',widthVal])
             modVisLock = False
             
-        # compute the left/right/top/bottom boundaries that are used by the models
+        #compute the left/right/top/bottom boundaries that are used by the models
         boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
         
-        # modify the visicon entry for this feature with the computed boundaries
+        #modify the visicon entry for this feature with the computed boundaries
         modVisLock = True
         actr.modify_visicon_features([results[0][idx],"screen-left",boundaries["SCREEN-LEFT"],
                                                               "screen-right",boundaries["SCREEN-RIGHT"],
@@ -629,6 +614,7 @@ def features_modified(cmd,params,success,results):
         for f in results[0]:
             modFeatIdxs.append(next(i for i,v in enumerate(currentVisicon) if f in v))
             
+        print(modFeatIdxs)
         
         # update currentVisicon to reflect the modifications to the modified features
         for i in range(len(modFeatIdxs)):
@@ -638,62 +624,22 @@ def features_modified(cmd,params,success,results):
             
             # list of the attributes that were modified for this feature - this includes added and deleted attributes
             moddedAttrs = params[i][1::2]
+            print(moddedAttrs)
             
             # list of the new values of the modified attributes - this includes added and deleted attribute values
             newAttrVals = params[i][2::2]
+            print(newAttrVals)
             
-            # go through the currentVisicon feature representation and update with new values
-            for moddedAttrPair in zip(moddedAttrs,newAttrVals):
-                # determine if the modified attribute already exists in the feature or if it's new
-                if moddedAttrPair[0] in currentVisicon[cvIdx]:
-                    # since attr already exists,get index of the value of the modified attribute 
-                    # of the feature that was modified
-                    maIdx = currentVisicon[cvIdx].index(moddedAttrPair[0])+1
-                    # update attribute with new value
-                    if (moddedAttrPair[0]=='HEIGHT' or moddedAttrPair[0]=='WIDTH') and moddedAttrPair[1] is None:
-                        # height or width attr was removed, so instead assume a value of 1 as in features_added()
-                        currentVisicon[cvIdx][maIdx] = 1
-                        # update ACT-R visicon with this assumption
-                        modVisArgList = [currentVisicon[cvIdx][0],moddedAttrPair[0],1]
-                        threading.Thread(target=call_modify_visicon_features, args=(modVisArgList,), daemon=True).start()
-                    else:
-                        currentVisicon[cvIdx][maIdx] = moddedAttrPair[1]
-                else:
-                    # attribute is new, so append it
-                    currentVisicon[cvIdx].append(moddedAttrPair[0])
-                    currentVisicon[cvIdx].append(moddedAttrPair[1])
-                    
-            # if X/Y/height/width were changed, recompute screen-left/right/top/bottom and update
-            if any(item in moddedAttrs for item in ['SCREEN-X','SCREEN-Y','HEIGHT','WIDTH']):
-                
-                xValIdx = currentVisicon[cvIdx].index('SCREEN-X')+1
-                yValIdx = currentVisicon[cvIdx].index('SCREEN-Y')+1
-                heightValIdx = currentVisicon[cvIdx].index('HEIGHT')+1
-                widthValIdx = currentVisicon[cvIdx].index('WIDTH')+1
-                
-                screenXVal = currentVisicon[cvIdx][xValIdx]
-                screenYVal = currentVisicon[cvIdx][yValIdx]
-                heightVal = currentVisicon[cvIdx][heightValIdx]
-                widthVal = currentVisicon[cvIdx][widthValIdx]
-                
-                # compute the left/right/top/bottom boundaries that are used by the models
-                boundaries = compute_boundaries(screenXVal,screenYVal,heightVal,widthVal)
-                
-                # update the currentVisicon representation with the new values
-                for attr in ['SCREEN-LEFT','SCREEN-RIGHT','SCREEN-TOP','SCREEN-BOTTOM']:
-                    attrIdx = currentVisicon[cvIdx].index(attr)+1
-                    currentVisicon[cvIdx][attrIdx] = boundaries[attr]
-                
-                # modify the visicon entry for this feature with the computed boundaries
-                # has to be done in another thread otherwise this will just hang waiting for the 
-                # modify-visicon-features call that triggered this to finish
-                modVisArgList = [currentVisicon[cvIdx][0],
-                                 "screen-left",boundaries["SCREEN-LEFT"],
-                                 "screen-right",boundaries["SCREEN-RIGHT"],
-                                 "screen-top",boundaries["SCREEN-TOP"],
-                                 "screen-bottom",boundaries["SCREEN-BOTTOM"]]
-                threading.Thread(target=call_modify_visicon_features, args=(modVisArgList,), daemon=True).start()
-                
+            # go through the currentVisicon feature representation and determine which were changed, added, deleted
+            
+            
+            
+        
+        # determine new attributes, changed attributes, and deleted attributes
+        #for p in params:
+        #    print(p)
+            
+        
         
     
 
@@ -707,17 +653,13 @@ def features_removed(cmd,params,success,results):
     global currentVisicon
     global vgScene
     global vgPrevScene
-    global modelIsVoting
     
+
     for f in results[0]:
         features.remove(f)
         
         featIdx = [x for x in range(len(currentVisicon)) if currentVisicon[x][0]==f]
         del currentVisicon[featIdx[0]]
-        
-    if len(features)==0 and len(currentVisicon)==0:
-        modelIsVoting = False
-    
         
 
 actr.add_command("modvis-remove",features_removed)
@@ -737,117 +679,56 @@ actr.add_command("modvis-remove-all",all_features_removed)
 actr.monitor_command("delete-all-visicon-features","modvis-remove-all")
 
 
-# def proc_display_monitor(cmd,params,success,results):
-#     global features
-#     global currentVisicon
-#     global vgScene
-#     global vgPrevScene
-#     global modVisLock
-    
-#     try:
-        
-        
-#         # using the list of current visicon features in currentVisicon, group
-#         # the scene using the specified radius and collision method
-#         # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
-#         # radius=8 for No-Lines-Color-Box
-#         if noImages:
-#             noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
-#             vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
-#         else:
-#             vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
-        
-#         # generate and apply labels for the newly determined groups
-#         # label application first occurs in the python representation, and then
-#         # the ACT-R chunk representation of a given feature is modified so that 
-#         # a "group" slot is added with a value set to the generated group label
-#         # inherit labels from vgPrevScene if possible
-#         label_groups(vgScene,vgPrevScene)
-        
-#         # add the group label associated with each feature in the visicon to
-#         # feature's chunk representation by adding a slot named "group" with
-#         # a value set to the label
-#         modVisLock = True
-#         for visPoint in vgScene.visPoints:
-#             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-#             #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-#             actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
-#         modVisLock = False
-            
-
-#         # display boxes around the visicon content
-#         if denoteGroups:
-#             denote_group_extent(vgScene)
-                
-        
-        
-        
-#         # now that groups have been determined and we've done everything we
-#         # want with them, store the current scene as the previous scene
-#         #vgPrevScene = vgScene
-        
-        
-#     except AttributeError:
-#         raise
-
 def proc_display_monitor(cmd,params,success,results):
     global features
     global currentVisicon
     global vgScene
     global vgPrevScene
     global modVisLock
-    global modelIsVoting
     
     try:
         
-        if not modelIsVoting:
+        # using the list of current visicon features in currentVisicon, group
+        # the scene using the specified radius and collision method
+        # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
+        # radius=8 for No-Lines-Color-Box
+        if noImages:
+            noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
+            vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
+        else:
+            vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
         
+        # generate and apply labels for the newly determined groups
+        # label application first occurs in the python representation, and then
+        # the ACT-R chunk representation of a given feature is modified so that 
+        # a "group" slot is added with a value set to the generated group label
+        # inherit labels from vgPrevScene if possible
+        label_groups(vgScene,vgPrevScene)
         
-            # using the list of current visicon features in currentVisicon, group
-            # the scene using the specified radius and collision method
-            # radius=20 for No-Lines-Color; "used to" be 25? (still discrepancies; some party affiliations are not grouped)
-            # radius=8 for No-Lines-Color-Box
-            if noImages:
-                noImageVisicon = [feat for feat in currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
-                vgScene = visGroups(noImageVisicon,groupingRadius,collisionMethod)
-            else:
-                vgScene = visGroups(currentVisicon,groupingRadius,collisionMethod)
-        
-            # generate and apply labels for the newly determined groups
-            # label application first occurs in the python representation, and then
-            # the ACT-R chunk representation of a given feature is modified so that 
-            # a "group" slot is added with a value set to the generated group label
-            # inherit labels from vgPrevScene if possible
-            label_groups(vgScene,vgPrevScene)
-        
-            # add the group label associated with each feature in the visicon to
-            # feature's chunk representation by adding a slot named "group" with
-            # a value set to the label
-            modVisLock = True
-            for visPoint in vgScene.visPoints:
-                #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
-                #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
-                actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
-            modVisLock = False
+        # add the group label associated with each feature in the visicon to
+        # feature's chunk representation by adding a slot named "group" with
+        # a value set to the label
+        modVisLock = True
+        for visPoint in vgScene.visPoints:
+            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupIdx)
+            #actr.set_chunk_slot_value(visPoint.visiconID,"group",visPoint.groupName)
+            actr.modify_visicon_features([visPoint.visiconID,"group",visPoint.groupName])
+        modVisLock = False
             
 
-            # display boxes around the visicon content
-            if denoteGroups:
-                denote_group_extent(vgScene)
-                
-            modelIsVoting = True
-                
+        # display boxes around the visicon content
+        if denoteGroups:
+            denote_group_extent(vgScene)
         
         
         
-            # now that groups have been determined and we've done everything we
-            # want with them, store the current scene as the previous scene
-            #vgPrevScene = vgScene
+        # now that groups have been determined and we've done everything we
+        # want with them, store the current scene as the previous scene
+        #vgPrevScene = vgScene
         
         
     except AttributeError:
         raise
-
     
     
 actr.add_command("pd-mon",proc_display_monitor)
@@ -871,7 +752,7 @@ def test():
     
     actr.set_parameter_value(':force-visual-commands',True)
     
-    plt.axis([-0.1,1.1,1.1,-0.1])
+    
     
 
 
@@ -885,21 +766,14 @@ def test():
     actr.add_visicon_features(['SCREEN-X',0,'SCREEN-Y',0],
                               ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12],
                               ['SCREEN-X',0,'SCREEN-Y',0,'WIDTH',12],
-                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12],
-                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12,'COLOR','blue'])
+                              ['SCREEN-X',0,'SCREEN-Y',0,'HEIGHT',12,'WIDTH',12])
     
     
     
     # test changing/deleting/adding attributes w/ (modify-visicon-features) from ACT-R environment to see how monitor handles it
-    actr.modify_visicon_features([currentVisicon[0][0],"SCREEN-X",100], #just change an attribute
-                                 [currentVisicon[2][0],"SCREEN-X",100, 'WIDTH',None], #change an attribute and delete an attribute
-                                 [currentVisicon[4][0],"SCREEN-X",100, "GROUP",'test']) #change an attribute and add an attribute
-
-
-    # test changing/deleting/adding attributes w/ (modify-visicon-features) from ACT-R environment to see how monitor handles it
-    actr.modify_visicon_features([features[0],"SCREEN-X",100,"SCREEN-Y",120,"COLOR","red"],
-                                 [features[2],"SCREEN-X",100, 'WIDTH',None], 
-                                 [features[4],"SCREEN-X",100, "HEIGHT",20,"GROUP",'test'])
+    actr.modify_visicon_features([features[0],"SCREEN-X",100], #just change an attribute
+                                 [features[2],"SCREEN-X",100, 'WIDTH',None], #change an attribute and delete an attribute
+                                 [features[4],"SCREEN-X",100, "GROUP",'test']) #change an attribute and add an attribute
 
     
     #actr.delete_visicon_features(ids[1])
