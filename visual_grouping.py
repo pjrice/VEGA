@@ -714,7 +714,9 @@ def features_removed(cmd,params,success,results):
         
         featIdx = [x for x in range(len(currentVisicon)) if currentVisicon[x][0]==f]
         del currentVisicon[featIdx[0]]
-        
+    
+    # calling (clear-all) in ACT-R seems to recursively call delete-visicon-features to remove everything
+    # so to clear the modelIsVoting flag, check for the length of features/currentVisicon to be zero    
     if len(features)==0 and len(currentVisicon)==0:
         modelIsVoting = False
     
