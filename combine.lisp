@@ -145,6 +145,10 @@
 		; Loads model into this file
 		(clear-all)
 		(eval model-combination)
+		
+		; add "group" as a chunk-type. Currently only relevant for visual_grouping_addGroupFeatures
+		(chunk-type (group (:include visual-object)) (group t))
+
 	)
 	
 	

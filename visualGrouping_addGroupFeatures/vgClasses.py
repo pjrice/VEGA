@@ -200,7 +200,7 @@ class visGroups:
             groupHeight = int(groupTop - groupBottom)
             groupWidth = int(groupRight - groupLeft)
             
-            vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'OVAL'],
+            vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'GROUP'],
                                         'SCREEN-X',groupMeanX,
                                         'SCREEN-Y',groupMeanY,
                                         'HEIGHT',groupHeight,
