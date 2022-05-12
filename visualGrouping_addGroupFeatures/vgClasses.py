@@ -13,6 +13,7 @@ class visPoint:
         self.checked = False
         self.groupIdx = None
         self.groupName = None
+        self.groupGroupingIter = None
         self.parse_feature(visiconFeature)
         
     def parse_feature(self,attrList):
@@ -72,10 +73,12 @@ class visGroups:
     def build_from_visicon(self):
         for feat in self.visFeats:
             self.visPoints.append(visPoint(feat))
+            self.visPoints[-1].groupGroupingIter = self.groupGroupingIters
             
     def build_from_featureList(self,featList):
         for feat in featList:
             self.visPoints.append(visPoint(feat))
+            self.visPoints[-1].groupGroupingIter = self.groupGroupingIters
         
     def glom_groups(self,radius):
         
