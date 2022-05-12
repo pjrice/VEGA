@@ -197,7 +197,8 @@ class visGroups:
             groupTop = np.max(groupSTops)
             groupBottom = np.min(groupSBottoms)
             
-            groupHeight = int(groupTop - groupBottom)
+            #groupHeight = int(groupTop - groupBottom)
+            groupHeight = int(groupBottom - groupTop) # because groupBottom/Top are based off of screen-top/bottom, which are in top left origin coordinates (screen-x/y)
             groupWidth = int(groupRight - groupLeft)
             
             vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'GROUP'],
