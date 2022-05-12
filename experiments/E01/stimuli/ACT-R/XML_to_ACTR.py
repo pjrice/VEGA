@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as ET
 import sys
-#sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
-sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
+sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
+#sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
 import actr
 
 
@@ -17,13 +17,13 @@ def parseXMLtoACTR(xmlFile):
     for item in root.iter('mxGeometry'):
         
         # get x/y and height/width of the mxGeometry element
-        xCoord = item.get('x')
-        yCoord = item.get('y')
-        height = item.get('height')
-        width = item.get('width')
+        xCoord = int(item.get('x'))
+        yCoord = int(item.get('y'))
+        height = int(item.get('height'))
+        width = int(item.get('width'))
         
         # add a visicon feature that reflects the x/y and height/width of the mxGeometry element
-        actr.add_visicon_features(['SCREEN-X',xCoord,'SCREEN-Y',yCoord,'HEIGHT',height,'WIDTH',width])
+        vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'OVAL'],'SCREEN-X',xCoord,'SCREEN-Y',yCoord,'HEIGHT',height,'WIDTH',width])
         
         
         
