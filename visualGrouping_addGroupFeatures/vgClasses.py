@@ -197,8 +197,8 @@ class visGroups:
             
             groupLeft = np.min(groupSLefts)
             groupRight = np.max(groupSRights)
-            groupTop = np.max(groupSTops)
-            groupBottom = np.min(groupSBottoms)
+            groupTop = np.min(groupSTops)
+            groupBottom = np.max(groupSBottoms)
             
             #groupHeight = int(groupTop - groupBottom)
             groupHeight = int(groupBottom - groupTop) # because groupBottom/Top are based off of screen-top/bottom, which are in top left origin coordinates (screen-x/y)
