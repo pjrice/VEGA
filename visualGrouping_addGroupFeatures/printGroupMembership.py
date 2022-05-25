@@ -22,11 +22,11 @@ for idx in range(0,len(vgConfig.vgScene.visPoints)):
     else:
         print('Visual feature ' + 
               vgConfig.vgScene.visPoints[idx].visiconID +
-              '\type: '+
+              '\ntype: '+
               getattr(vgConfig.vgScene.visPoints[idx],'ISA')[0] +
               '; ' +
               getattr(vgConfig.vgScene.visPoints[idx],'ISA')[1] +
-              '\ngtoup id: ' +
+              '\ngroup id: ' +
               vgConfig.vgScene.visPoints[idx].groupName + 
               '\ngrouping iteration: ' + 
               str(vgConfig.vgScene.visPoints[idx].groupGroupingIter) +
