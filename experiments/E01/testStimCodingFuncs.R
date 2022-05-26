@@ -65,6 +65,7 @@ filepaths = c('/home/ausmanpa/Desktop/stimCodingComp/Patrick/p004_s40_v1.xlsx',
               '/home/ausmanpa/Desktop/stimCodingComp/Linda/p004_s40.xlsx',
               '/home/ausmanpa/Desktop/stimCodingComp/Ariana/Ariana_Matrix_s40.xlsx')
 compareStimCoding(filepaths,checkFiles=FALSE)
+getPairLabels(filepaths,obj1idx=15,obj2idx=17,checkFiles=FALSE)
 
 #s55
 filepaths = c('/home/ausmanpa/Desktop/stimCodingComp/Patrick/p012_s55_v1.xlsx',
