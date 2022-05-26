@@ -1,53 +1,109 @@
 library(readxl)
 library(tidyr)
+library(dplyr)
+library(ggplot2)
 
-# argument should be a list of files we are comparing
-filepaths = c('/home/ausmanpa/Desktop/stimCodingComp/Patrick/p017_s15_v1.xlsx',
-              '/home/ausmanpa/Desktop/stimCodingComp/Mike/mdbMatrix_s15.xlsx',
-              '/home/ausmanpa/Desktop/stimCodingComp/Linda/p017_s15.xlsx')
-
-
-# check that we are comparing the same files
-fnames = sapply(strsplit(filepaths,'/'),tail,1)
-if (!length(unique(fnames))==1) {
-  stop('Files in argument list have different filenames')
+sortGroupingLabels = function(groupingLabel) {
+  if (is.na(groupingLabel)) {
+    return(NA)
+  } else {
+    orderedLabel = paste(sort(unlist(strsplit(groupingLabel,''))),sep='',collapse='')
+    return(orderedLabel)
+  }
 }
 
-# load files and concatenate into dataframe
-for (file in filepaths) {
+compareStimCoding = function(filepaths,checkFiles=TRUE,delim=', ') {
   
-  tempData = read_excel(file,sheet=1)
-  
-  for (rIdx in 1:nrow(tempData)) {
-    for (cIdx in (rIdx+1):ncol(tempData)) {
-      if (is.na(tempData[rIdx,cIdx])) {
-        tempData[rIdx,cIdx] = 'w'
-      }
+  # check that we are comparing the same files
+  if (checkFiles) {
+    fnames = sapply(strsplit(filepaths,'/'),tail,1)
+    if (!length(unique(fnames))==1) {
+      stop('Files in argument list have different filenames')
     }
   }
   
-  # convert data to long format
-  tempData = tempData %>% gather(key='obj_idx2',value='grouping',-obj_idx)
-  colnames(tempData) = c('obj1','obj2','grouping')
-  tempData$coder = tail(strsplit(file,'/')[[1]],2)[1]
-  
-  if (!exists('compData')) {
-    compData = tempData
-  } else {
-    compData = rbind(compData,tempData)
+  # load files and concatenate into dataframe
+  for (file in filepaths) {
+    
+    tempData = read_excel(file,sheet=1)
+    
+    # for object pairs that were not grouped, replace NA with 'w'
+    # (performed for top half/triangle of matrix only)
+    for (rIdx in 1:nrow(tempData)) {
+      for (cIdx in (rIdx+1):ncol(tempData)) {
+        if (is.na(tempData[rIdx,cIdx])) {
+          tempData[rIdx,cIdx] = 'w'
+        }
+      }
+    }
+    
+    # convert data to long format
+    tempData = tempData %>% gather(key='obj_idx2',value='grouping',-obj_idx)
+    colnames(tempData) = c('obj1','obj2','grouping')
+    tempData$coder = tail(strsplit(file,'/')[[1]],2)[1]
+    
+    # make sure the labels are in alphabetical order for comparison between coders
+    tempData$grouping = sapply(tempData$grouping,sortGroupingLabels)
+    
+    if (!exists('compData')) {
+      compData = tempData
+    } else {
+      compData = rbind(compData,tempData)
+    }
+    
   }
+  
+  # compare each cell across coders
+  # https://stackoverflow.com/questions/15933958/collapse-concatenate-aggregate-a-column-to-a-single-comma-separated-string-w
+  compData = compData %>% 
+    group_by(obj1,obj2,coder) %>% 
+    summarise(uniqueGroups=unique(grouping)) %>% 
+    group_by(obj1,obj2,uniqueGroups) %>% 
+    summarise(coders = paste(substr(coder,1,1),collapse=delim)) %>% #switched from toString() to paste() to use collapse arg for \n
+    mutate(shift=(1:n())/n() - 1/(2*n()) - 1/2,
+           height=1/n())
+  
+  # map stimulus coding symbols to ggplot colors
+  groupColors = c('NA'='grey35',
+                  'w'='white',
+                  'p'='pink',
+                  'r'='red',
+                  'o'='orange',
+                  'g'='green',
+                  'c'='cyan',
+                  'b'='blue',
+                  'u'='purple',
+                  'k'='black',
+                  'w'='white')
+  
+  # map stimulus coding symbols to legend labels
+  groupLabels = c('w'='no grouping',
+                  'p'='pink',
+                  'r'='red',
+                  'o'='orange',
+                  'g'='green',
+                  'c'='cyan',
+                  'b'='blue',
+                  'u'='purple',
+                  'k'='black')
+  
+  ggplot(compData,aes(x=obj2,y=obj1+shift,fill=uniqueGroups,height=height)) +
+    geom_tile(color='black') +
+    scale_y_reverse(expand=c(0,0)) +
+    scale_x_discrete(expand=c(0,0),limits=seq(1,max(as.numeric(compData$obj2)))) +
+    scale_fill_manual(values=groupColors,labels=groupLabels) +
+    geom_text(aes(label=coders))
   
 }
 
 
-# compare each cell across coders
-# https://stackoverflow.com/questions/15933958/collapse-concatenate-aggregate-a-column-to-a-single-comma-separated-string-w
-compData %>% 
-  group_by(obj1,obj2,coder) %>% 
-  summarise(uniqueGroups=unique(grouping)) %>%
-  group_by(obj1,obj2,uniqueGroups) %>%
-  summarise(test = toString(coder)) %>%
-  ungroup()
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,7 @@
 library(readxl)
 library(tidyr)
 library(ggplot2)
+library(data.table)
 
 # https://stackoverflow.com/questions/38506324/split-fill-in-ggplot-geom-tile-or-heatmap-two-colors-by-third-value
 # https://stackoverflow.com/questions/22107666/generating-split-color-rectangles-from-ggplot2-geom-raster
