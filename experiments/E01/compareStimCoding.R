@@ -12,7 +12,7 @@ sortGroupingLabels = function(groupingLabel) {
   }
 }
 
-compareStimCoding = function(filepaths,checkFiles=TRUE,delim=', ') {
+compareStimCoding = function(filepaths,labelGrid=FALSE,checkFiles=TRUE,delim=', ') {
   
   # check that we are comparing the same files
   if (checkFiles) {
@@ -55,13 +55,28 @@ compareStimCoding = function(filepaths,checkFiles=TRUE,delim=', ') {
   
   # compare each cell across coders
   # https://stackoverflow.com/questions/15933958/collapse-concatenate-aggregate-a-column-to-a-single-comma-separated-string-w
+  # compData = compData %>% 
+  #   group_by(obj1,obj2,coder) %>% 
+  #   summarise(uniqueGroups=unique(grouping)) %>% 
+  #   group_by(obj1,obj2,uniqueGroups) %>% 
+  #   summarise(coders = paste(substr(coder,1,1),collapse=delim)) %>% #switched from toString() to paste() to use collapse arg for \n
+  #   mutate(shift=(1:n())/n() - 1/(2*n()) - 1/2,
+  #          height=1/n())
+  
   compData = compData %>% 
     group_by(obj1,obj2,coder) %>% 
     summarise(uniqueGroups=unique(grouping)) %>% 
     group_by(obj1,obj2,uniqueGroups) %>% 
     summarise(coders = paste(substr(coder,1,1),collapse=delim)) %>% #switched from toString() to paste() to use collapse arg for \n
-    mutate(shift=(1:n())/n() - 1/(2*n()) - 1/2,
-           height=1/n())
+    mutate(yshift=(1:n())/n() - 1/(2*n()) - 1/2,
+           height=1/n()) %>%
+    mutate(uniqueGroups=strsplit(as.character(uniqueGroups),split='')) %>%
+    unnest(uniqueGroups) %>%
+    group_by(obj1,obj2,coders) %>%
+    mutate(xshift=(1:n())/n() - 1/(2*n()) - 1/2,
+           width=1/n())
+  
+  compData$obj2 = as.numeric(compData$obj2)
   
   # map stimulus coding symbols to ggplot colors
   groupColors = c('NA'='grey35',
@@ -87,12 +102,19 @@ compareStimCoding = function(filepaths,checkFiles=TRUE,delim=', ') {
                   'u'='purple',
                   'k'='black')
   
-  ggplot(compData,aes(x=obj2,y=obj1+shift,fill=uniqueGroups,height=height)) +
-    geom_tile(color='black') +
-    scale_y_reverse(expand=c(0,0)) +
-    scale_x_discrete(expand=c(0,0),limits=seq(1,max(as.numeric(compData$obj2)))) +
-    scale_fill_manual(values=groupColors,labels=groupLabels) +
-    geom_text(aes(label=coders))
+  p1 = ggplot(compData,aes(x=obj2+xshift,y=obj1+yshift,fill=uniqueGroups,height=height,width=width)) +
+  geom_tile(color='black') +
+  scale_y_reverse(expand=c(0,0)) +
+  scale_x_discrete(expand=c(0,0),limits=seq(1,max(as.numeric(compData$obj2)))) +
+  scale_fill_manual(values=groupColors,labels=groupLabels)
+  #geom_text(aes(label=coders))
+  
+  if (labelGrid) {
+    p1 = p1+geom_text(aes(label=coders))
+  }
+  
+  p1
+    
   
 }
 
