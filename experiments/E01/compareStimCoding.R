@@ -1,7 +1,9 @@
 library(readxl)
 library(tidyr)
 library(dplyr)
+library(plotly)
 library(ggplot2)
+library(htmlwidgets)
 
 sortGroupingLabels = function(groupingLabel) {
   if (is.na(groupingLabel)) {
@@ -12,7 +14,7 @@ sortGroupingLabels = function(groupingLabel) {
   }
 }
 
-compareStimCoding = function(filepaths,labelGrid=FALSE,checkFiles=TRUE,delim=', ') {
+compareStimCoding = function(filepaths,savePlotPath=NA,checkFiles=TRUE,delim=', ') {
   
   # check that we are comparing the same files
   if (checkFiles) {
@@ -67,7 +69,8 @@ compareStimCoding = function(filepaths,labelGrid=FALSE,checkFiles=TRUE,delim=', 
     group_by(obj1,obj2,coder) %>% 
     summarise(uniqueGroups=unique(grouping)) %>% 
     group_by(obj1,obj2,uniqueGroups) %>% 
-    summarise(coders = paste(substr(coder,1,1),collapse=delim)) %>% #switched from toString() to paste() to use collapse arg for \n
+    #summarise(coders = paste(substr(coder,1,1),collapse=delim)) %>% #switched from toString() to paste() to use collapse arg for \n
+    summarise(coders = paste(coder,collapse=delim)) %>% #switched from toString() to paste() to use collapse arg for \n
     mutate(yshift=(1:n())/n() - 1/(2*n()) - 1/2,
            height=1/n()) %>%
     mutate(uniqueGroups=strsplit(as.character(uniqueGroups),split='')) %>%
@@ -102,18 +105,36 @@ compareStimCoding = function(filepaths,labelGrid=FALSE,checkFiles=TRUE,delim=', 
                   'u'='purple',
                   'k'='black')
   
-  p1 = ggplot(compData,aes(x=obj2+xshift,y=obj1+yshift,fill=uniqueGroups,height=height,width=width)) +
+  partAndStim = strsplit(sapply(strsplit(filepaths,'/'),tail,1)[1],'_')[[1]][1:2]
+  part = partAndStim[1]
+  stim = partAndStim[2]
+  
+  p1 = ggplot(compData,aes(x=obj2+xshift,
+                           y=obj1+yshift,
+                           fill=uniqueGroups,
+                           height=height,
+                           width=width,
+                           label=coders,
+                           text=paste(obj1,obj2,sep=', '))) +
   geom_tile(color='black') +
-  scale_y_reverse(expand=c(0,0)) +
+  scale_y_reverse(expand=c(0,0),breaks=seq(1,max(as.numeric(compData$obj1)))) +
   scale_x_discrete(expand=c(0,0),limits=seq(1,max(as.numeric(compData$obj2)))) +
-  scale_fill_manual(values=groupColors,labels=groupLabels)
-  #geom_text(aes(label=coders))
+  scale_fill_manual(values=groupColors,labels=groupLabels) +
+  xlab('Object 2') +
+  ylab('Object 1') +
+  ggtitle(paste('Comparison of coding of participant ',part,'; stimulus ',stim,sep=''))
   
-  if (labelGrid) {
-    p1 = p1+geom_text(aes(label=coders))
+  
+  p2 = ggplotly(p1,tooltip=c('text','fill','label'))
+  
+  #p2
+  
+  if (!is.na(savePlotPath)) {
+    fname = paste0(savePlotPath,'/',part,'_',stim,'_compPlot.html')
+    saveWidget(p2,fname)
+  } else {
+    p2
   }
-  
-  p1
     
   
 }

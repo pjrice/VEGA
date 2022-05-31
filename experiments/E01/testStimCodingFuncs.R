@@ -72,4 +72,4 @@ filepaths = c('/home/ausmanpa/Desktop/stimCodingComp/Patrick/p012_s55_v1.xlsx',
               '/home/ausmanpa/Desktop/stimCodingComp/Mike/mdbMatrix_s55.xlsx',
               '/home/ausmanpa/Desktop/stimCodingComp/Linda/p012_s55.xlsx',
               '/home/ausmanpa/Desktop/stimCodingComp/Ariana/Ariana_Matrix_s55.xlsx')
-compareStimCoding(filepaths,checkFiles=FALSE)
+compareStimCoding(filepaths,savePlotPath='/home/ausmanpa/Desktop/stimCodingComp/',checkFiles=FALSE)
