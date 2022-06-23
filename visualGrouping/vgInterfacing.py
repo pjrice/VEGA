@@ -22,6 +22,8 @@ def reset ():
 
     vgConfig.features = []
     vgConfig.currentVisicon = []
+    vgConfig.vgScene = None
+    vgConfig.modelIsVoting = False
     
    
 # add this function as an actr command, so that it can be monitored
