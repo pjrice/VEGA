@@ -27,11 +27,19 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
         yCoord = yCoord*scaleFactor
         height = height*scaleFactor
         width = width*scaleFactor
+        
+        # compute edges as though x/y coords are center of object
+        #leftEdge = int(xCoord - width/2)
+        #rightEdge = int(xCoord + width/2)
+        #topEdge = int(yCoord - height/2)
+        #bottomEdge = int(yCoord + height/2)
     
-        leftEdge = int(xCoord - width/2)
-        rightEdge = int(xCoord + width/2)
-        topEdge = int(yCoord - height/2)
-        bottomEdge = int(yCoord + height/2)
+        # compute edges as though x/y coords are top left corner of object
+        leftEdge = xCoord
+        rightEdge = xCoord+width
+        topEdge = yCoord
+        bottomEdge = yCoord+height
+    
     
         # "draw" left edge
         img2write[topEdge:bottomEdge,(leftEdge-lineWidth):(leftEdge+lineWidth),:] = np.uint8(0)
@@ -45,15 +53,22 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
     # second, put the group labelings into the image
     for groupIdx in scene.groupIdxs:
     
+        # compute edges as though x/y coords are center of object
         # get the leftmost screen-x coordinate
-        groupLE = int(min([getattr(vp,'SCREEN-X')-(getattr(vp,'WIDTH')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        #groupLE = int(min([getattr(vp,'SCREEN-X')-(getattr(vp,'WIDTH')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
         # get the rightmost screen-x coordinate, considering width of the visPoints
-        groupRE = int(max([getattr(vp,'SCREEN-X')+(getattr(vp,'WIDTH')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        #groupRE = int(max([getattr(vp,'SCREEN-X')+(getattr(vp,'WIDTH')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
         # get the topmost screen-y coordinate
-        groupTE = int(min([getattr(vp,'SCREEN-Y')-(getattr(vp,'HEIGHT')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        #groupTE = int(min([getattr(vp,'SCREEN-Y')-(getattr(vp,'HEIGHT')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
         # get the bottommost screen-y coordinate, considering the height of the visPoints
-        groupBE = int(max([getattr(vp,'SCREEN-Y')+(getattr(vp,'HEIGHT')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        #groupBE = int(max([getattr(vp,'SCREEN-Y')+(getattr(vp,'HEIGHT')/2) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
     
+        # compute edges as though x/y coords are top left corner of object
+        groupLE = int(min([getattr(vp,'SCREEN-X') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        groupRE = int(max([getattr(vp,'SCREEN-X')+getattr(vp,'WIDTH') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        groupTE = int(min([getattr(vp,'SCREEN-Y') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        groupBE = int(max([getattr(vp,'SCREEN-Y')+getattr(vp,'HEIGHT') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        
         # apply padding and scaling factors
         groupLE = (groupLE-groupPad)*3
         groupRE = (groupRE+groupPad)*3
