@@ -18,7 +18,9 @@
 (run-environment)
 
 (define-model dummy (sgp :force-visual-commands t))
-(chunk-type (group (:include visual-object)) (group t))
+
+
+;(chunk-type (group (:include visual-object)) (group t))
 
 
 ;(run-single '("No-Lines-Color-refactor" nil nil nil nil nil) nil nil t)
