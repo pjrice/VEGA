@@ -14,7 +14,7 @@ sortGroupingLabels = function(groupingLabel) {
   }
 }
 
-compareStimCoding = function(filepaths,savePlotPath=NA,checkFiles=TRUE,delim=', ') {
+compareStimCoding = function(filepaths,sheetNames,savePlotPath=NA,checkFiles=TRUE,delim=', ') {
   
   # check that we are comparing the same files
   if (checkFiles) {
@@ -25,9 +25,12 @@ compareStimCoding = function(filepaths,savePlotPath=NA,checkFiles=TRUE,delim=', 
   }
   
   # load files and concatenate into dataframe
+  idx = 1
   for (file in filepaths) {
     
-    tempData = read_excel(file,sheet=1)
+    sheetName = sheetNames[idx]
+    
+    tempData = read_excel(file,sheet=sheetName)
     
     # for object pairs that were not grouped, replace NA with 'w'
     # (performed for top half/triangle of matrix only)
@@ -42,7 +45,10 @@ compareStimCoding = function(filepaths,savePlotPath=NA,checkFiles=TRUE,delim=', 
     # convert data to long format
     tempData = tempData %>% gather(key='obj_idx2',value='grouping',-obj_idx)
     colnames(tempData) = c('obj1','obj2','grouping')
-    tempData$coder = tail(strsplit(file,'/')[[1]],2)[1]
+    #tempData$coder = tail(strsplit(file,'/')[[1]],2)[1]
+    coderName = strsplit(file,'_')[[1]][3]
+    coderName = unlist(strsplit(coderName,'.xlsx'))
+    tempData$coder = coderName
     
     # make sure the labels are in alphabetical order for comparison between coders
     tempData$grouping = sapply(tempData$grouping,sortGroupingLabels)
@@ -52,6 +58,8 @@ compareStimCoding = function(filepaths,savePlotPath=NA,checkFiles=TRUE,delim=', 
     } else {
       compData = rbind(compData,tempData)
     }
+    
+    idx = idx+1
     
   }
   
@@ -106,7 +114,8 @@ compareStimCoding = function(filepaths,savePlotPath=NA,checkFiles=TRUE,delim=', 
                   'k'='black')
   
   partAndStim = strsplit(sapply(strsplit(filepaths,'/'),tail,1)[1],'_')[[1]][1:2]
-  part = partAndStim[1]
+  #part = partAndStim[1]
+  part = sheetNames[1]
   stim = partAndStim[2]
   
   p1 = ggplot(compData,aes(x=obj2+xshift,

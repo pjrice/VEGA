@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import sys
 sys.path.insert(0,'/home/ausmanpa/actr7.x/tutorial/python')
 #sys.path.insert(0,'/Users/pjr5/actr7.x/tutorial/python')
-import actr
+import vgLabeling
 
 
 def parseXMLtoACTR(xmlFile):
@@ -13,19 +13,33 @@ def parseXMLtoACTR(xmlFile):
     # get root element
     root = tree.getroot()
     
-    # for each mxGeometry element in the xml file
-    for item in root.iter('mxGeometry'):
+    # for each mxCell element in the xml file
+    for item in root.iter('mxCell'):
+        if 'value' in item.keys():
+            if len(item.get('value'))==1:
+                val = item.get('value')
+            else:
+                val = item.get('value').split('</span>')[0][-1]
         
-        # get x/y and height/width of the mxGeometry element
-        xCoord = int(item.get('x'))
-        yCoord = int(item.get('y'))
-        height = int(item.get('height'))
-        width = int(item.get('width'))
+            geom = list(item)[0]
+            xCoord = int(geom.get('x'))
+            yCoord = int(geom.get('y'))
+            height = int(geom.get('height'))
+            width = int(geom.get('width'))
+            
+            # add a visicon feature that reflects the x/y and height/width of the mxGeometry element
+            vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'OVAL'],
+                                                  'SCREEN-X',xCoord,
+                                                  'SCREEN-Y',yCoord,
+                                                  'HEIGHT',height,
+                                                  'WIDTH',width,
+                                                  'VALUE',val])
         
-        # add a visicon feature that reflects the x/y and height/width of the mxGeometry element
-        vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'OVAL'],'SCREEN-X',xCoord,'SCREEN-Y',yCoord,'HEIGHT',height,'WIDTH',width])
-        
-        
+
+    
+    
+
+
         
 def parseXMLtoACTR2(xmlFile):
     
