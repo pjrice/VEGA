@@ -3,7 +3,8 @@ import glob
 
 
 xmlFolder = '/home/ausmanpa/gp/VEGA/experiments/E01/stimuli/numbered_jpg/'
-saveFolder = '/home/ausmanpa/Desktop/testing/'
+#saveFolder = '/home/ausmanpa/Desktop/testing/'
+saveFolder = '/home/ausmanpa/Desktop/testing/iterateRadiiModelPreds/'
 
 xmlFiles = glob.glob(xmlFolder+'*.xml')
 
@@ -29,8 +30,8 @@ for xmlFile in xmlFiles:
     
     # create and save the model prediction jpg
     stimName = xmlFile.split('/')[-1].split('.')[0]
-    mk_modelPred_jpgs(vgConfig.vgScene, stimName, saveFolder)
-
+    #mk_modelPred_jpgs(vgConfig.vgScene, stimName, saveFolder)
+    mk_hierModelPred_jpgs(vgConfig.sceneGroupsSubset, stimName, saveFolder)
     
 
     

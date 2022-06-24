@@ -21,7 +21,7 @@ denoteGroups = False # a flag for whether or not to show the extent of the ident
 noImages = True # controls whether or not features that are images are considered during grouping
 modelIsVoting = False # controls whether grouping occurs while model is voting
 
-radiusBounds = (8,25)
+radiusBounds = (8,500)
         
 sceneGroups = {}
 sceneGroupsSubset = None
