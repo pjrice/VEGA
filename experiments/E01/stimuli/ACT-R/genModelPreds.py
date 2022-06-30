@@ -31,7 +31,7 @@ for xmlFile in xmlFiles:
     # create and save the model prediction jpg
     stimName = xmlFile.split('/')[-1].split('.')[0]
     #mk_modelPred_jpgs(vgConfig.vgScene, stimName, saveFolder)
-    mk_hierModelPred_jpgs(vgConfig.sceneGroupsSubset, stimName, saveFolder)
+    mk_iterModelPred_jpgs(vgConfig.sceneGroupsSubset, stimName, saveFolder)
     
 
     

@@ -80,7 +80,7 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
 
 
 
-def mk_hierModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, scaleFactor=3):
+def mk_iterModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, scaleFactor=3):
     
     img2write = np.full((3300,2550,3),255,dtype=np.uint8)
     
@@ -171,6 +171,18 @@ def mk_hierModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12,
     
         
         
+def mk_grpFeatModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, scaleFactor=3):
+    
+    img2write = np.full((3300,2550,3),255,dtype=np.uint8)
+    
+    colorList = ['red','green','blue','pink','orange','cyan','purple']
+    colors = {'red':[np.uint8(0),np.uint8(0),np.uint8(255)],
+              'green':[np.uint8(0),np.uint8(255),np.uint8(0)],
+              'blue':[np.uint8(255),np.uint8(0),np.uint8(0)],
+              'pink':[np.uint8(255),np.uint8(0),np.uint8(255)],
+              'orange':[np.uint8(0),np.uint8(165),np.uint8(255)],
+              'cyan':[np.uint8(255),np.uint8(255),np.uint8(0)],
+              'purple':[np.uint8(128),np.uint8(0),np.uint8(128)]}
     
     
     
