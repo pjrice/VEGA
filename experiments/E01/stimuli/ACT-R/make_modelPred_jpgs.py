@@ -28,11 +28,11 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
         height = height*scaleFactor
         width = width*scaleFactor
         
-        # compute edges as though x/y coords are top left corner of object
-        leftEdge = xCoord
-        rightEdge = xCoord+width
-        topEdge = yCoord
-        bottomEdge = yCoord+height
+        # compute edges - x/y coords are centered on object
+        leftEdge = int(xCoord-(width/2))
+        rightEdge = int(xCoord+(width/2))
+        topEdge = int(yCoord-(height/2))
+        bottomEdge = int(yCoord+(height/2))
     
     
         # "draw" left edge
@@ -47,11 +47,11 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
     # second, put the group labelings into the image
     for groupIdx in scene.groupIdxs:
     
-        # compute edges as though x/y coords are top left corner of object
-        groupLE = int(min([getattr(vp,'SCREEN-X') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
-        groupRE = int(max([getattr(vp,'SCREEN-X')+getattr(vp,'WIDTH') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
-        groupTE = int(min([getattr(vp,'SCREEN-Y') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
-        groupBE = int(max([getattr(vp,'SCREEN-Y')+getattr(vp,'HEIGHT') for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        # compute edges - x/y coords are centered on object
+        groupLE = int(min([(getattr(vp,'SCREEN-X')-(getattr(vp,'WIDTH')/2)) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        groupRE = int(max([(getattr(vp,'SCREEN-X')+(getattr(vp,'WIDTH')/2)) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        groupTE = int(min([(getattr(vp,'SCREEN-Y')-(getattr(vp,'HEIGHT')/2)) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
+        groupBE = int(max([(getattr(vp,'SCREEN-Y')+(getattr(vp,'HEIGHT')/2)) for vp in scene.visPoints if vp.groupIdx==groupIdx]))
         
         # apply padding and scaling factors
         groupLE = (groupLE-groupPad)*3
@@ -110,11 +110,11 @@ def mk_iterModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12,
         height = height*scaleFactor
         width = width*scaleFactor
     
-        # compute edges as though x/y coords are top left corner of object
-        leftEdge = xCoord
-        rightEdge = xCoord+width
-        topEdge = yCoord
-        bottomEdge = yCoord+height
+        # compute edges - x/y coords are centered on object
+        leftEdge = int(xCoord-(width/2))
+        rightEdge = int(xCoord+(width/2))
+        topEdge = int(yCoord-(height/2))
+        bottomEdge = int(yCoord+(height/2))
     
         # "draw" left edge
         img2write[topEdge:bottomEdge,(leftEdge-lineWidth):(leftEdge+lineWidth),:] = np.uint8(0)
@@ -134,16 +134,16 @@ def mk_iterModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12,
         for groupIdx in sceneSubset.groupIdxs:
     
             # compute edges as though x/y coords are top left corner of object
-            groupLE = int(min([getattr(vp,'SCREEN-X') for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
-            groupRE = int(max([getattr(vp,'SCREEN-X')+getattr(vp,'WIDTH') for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
-            groupTE = int(min([getattr(vp,'SCREEN-Y') for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
-            groupBE = int(max([getattr(vp,'SCREEN-Y')+getattr(vp,'HEIGHT') for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
+            groupLE = int(min([(getattr(vp,'SCREEN-X')-(getattr(vp,'WIDTH')/2)) for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
+            groupRE = int(max([(getattr(vp,'SCREEN-X')+(getattr(vp,'WIDTH')/2)) for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
+            groupTE = int(min([(getattr(vp,'SCREEN-Y')-(getattr(vp,'HEIGHT')/2)) for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
+            groupBE = int(max([(getattr(vp,'SCREEN-Y')+(getattr(vp,'HEIGHT')/2)) for vp in sceneSubset.visPoints if vp.groupIdx==groupIdx]))
         
             # apply padding and scaling factors
-            groupLE = (groupLE-groupPad)*3
-            groupRE = (groupRE+groupPad)*3
-            groupTE = (groupTE-groupPad)*3
-            groupBE = (groupBE+groupPad)*3
+            groupLE = (groupLE-groupPad)*scaleFactor
+            groupRE = (groupRE+groupPad)*scaleFactor
+            groupTE = (groupTE-groupPad)*scaleFactor
+            groupBE = (groupBE+groupPad)*scaleFactor
             
             groupColor = colors[colorList[colorIdx]]
     
@@ -183,6 +183,88 @@ def mk_grpFeatModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=
               'orange':[np.uint8(0),np.uint8(165),np.uint8(255)],
               'cyan':[np.uint8(255),np.uint8(255),np.uint8(0)],
               'purple':[np.uint8(128),np.uint8(0),np.uint8(128)]}
+    
+    # first, put the stimulus objects into the image - only need to do this once
+    for vp in scene.visPoints:
+        if vp.ISA[1] != 'GROUP':
+            
+            xCoord = getattr(vp,'SCREEN-X')
+            yCoord = getattr(vp,'SCREEN-Y')
+            height = getattr(vp,'HEIGHT')
+            width = getattr(vp,'WIDTH')
+        
+            # there is a scaling factor - should be 3?
+            xCoord = xCoord*scaleFactor
+            yCoord = yCoord*scaleFactor
+            height = height*scaleFactor
+            width = width*scaleFactor
+        
+            # compute edges as though x/y coords are top left corner of object
+            leftEdge = xCoord
+            rightEdge = xCoord+width
+            topEdge = yCoord
+            bottomEdge = yCoord+height
+            
+    
+    
+            # "draw" left edge
+            img2write[topEdge:bottomEdge,(leftEdge-lineWidth):(leftEdge+lineWidth),:] = np.uint8(0)
+            # "draw" right edge
+            img2write[topEdge:bottomEdge,(rightEdge-lineWidth):(rightEdge+lineWidth),:] = np.uint8(0)
+            # "draw" top edge
+            img2write[(topEdge-lineWidth):(topEdge+lineWidth),leftEdge:rightEdge,:] = np.uint8(0)
+            # "draw" bottom edge
+            img2write[(bottomEdge-lineWidth):(bottomEdge+lineWidth),leftEdge:rightEdge,:] = np.uint8(0)
+            
+    # second, put the group labelings into the image
+    for groupingIter in range(1,scene.groupGroupingIters+1):
+        
+        groupColor = colors[colorList[groupingIter-1]]
+        
+        for vp in scene.visPoints:
+            if vp.groupGroupingIter == groupingIter:
+            
+                xCoord = getattr(vp,'SCREEN-X')
+                yCoord = getattr(vp,'SCREEN-Y')
+                height = getattr(vp,'HEIGHT')
+                width = getattr(vp,'WIDTH')
+        
+                # compute edges as though x/y coords are top left corner of object
+                leftEdge = xCoord
+                rightEdge = xCoord+width
+                topEdge = yCoord
+                bottomEdge = yCoord+height
+            
+                leftEdge = (leftEdge-groupPad)*scaleFactor
+                rightEdge = (rightEdge+groupPad)*scaleFactor
+                topEdge = (topEdge-groupPad)*scaleFactor
+                bottomEdge = (bottomEdge+groupPad)*scaleFactor
+    
+    
+                # "draw" left edge
+                img2write[topEdge:bottomEdge,(leftEdge-lineWidth):(leftEdge+lineWidth),:] = groupColor
+                # "draw" right edge
+                img2write[topEdge:bottomEdge,(rightEdge-lineWidth):(rightEdge+lineWidth),:] = groupColor
+                # "draw" top edge
+                img2write[(topEdge-lineWidth):(topEdge+lineWidth),leftEdge:rightEdge,:] = groupColor
+                # "draw" bottom edge
+                img2write[(bottomEdge-lineWidth):(bottomEdge+lineWidth),leftEdge:rightEdge,:] = groupColor
+                
+        groupPad += 6
+            
+            
+            
+    #prep folder/filename
+    if not os.path.isdir(saveFolder+'_'.join(radii)+'px/'):
+        saveFolder = saveFolder+'_'.join(radii)+'px/'
+        os.mkdir(saveFolder)
+    else:
+        saveFolder = saveFolder+'_'.join(radii)+'px/'
+    
+    #write image
+    cv2.imwrite(saveFolder+stimName+'.jpg',img2write)
+    
+            
     
     
     

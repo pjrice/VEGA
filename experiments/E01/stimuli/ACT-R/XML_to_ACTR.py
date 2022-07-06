@@ -28,6 +28,10 @@ def parseXMLtoACTR(xmlFile):
             width = int(geom.get('width'))
             
             # add a visicon feature that reflects the x/y and height/width of the mxGeometry element
+            # x/y coordinates in visicon space are centered on the feature, while the x/y coordinates from the xml
+            # file have the origin as the top left of the feature, so will have to convert
+            xCoord = xCoord+(width/2)
+            yCoord = yCoord+(height/2)
             vgLabeling.actr.add_visicon_features(['ISA',['VISUAL-LOCATION', 'OVAL'],
                                                   'SCREEN-X',xCoord,
                                                   'SCREEN-Y',yCoord,
