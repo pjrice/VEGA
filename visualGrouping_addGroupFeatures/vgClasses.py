@@ -153,6 +153,7 @@ class visGroups:
             
             if (self.groupCount - self.prevGroupCount)==1:
                 # add the last group feature (the "metagroup", ie the group that contains all other groups)
+                self.groupGroupingIters += 1
                 self.make_group_features()
                 self.metaGrouped = True
         
@@ -180,8 +181,10 @@ class visGroups:
                     groupSTops.append(getattr(visPoint,'SCREEN-TOP'))
                     groupSBottoms.append(getattr(visPoint,'SCREEN-BOTTOM'))
             
-            groupMeanX = int(np.mean(groupXs))
-            groupMeanY = int(np.mean(groupYs))
+            # mean of unique values so that multiple objects at one x/y position doesn't skew position of group towards
+            # those objects
+            groupMeanX = int(np.mean(np.unique(groupXs)))
+            groupMeanY = int(np.mean(np.unique(groupYs)))
             
             groupLeft = np.min(groupSLefts)
             groupRight = np.max(groupSRights)
