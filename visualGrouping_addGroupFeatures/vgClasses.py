@@ -142,18 +142,6 @@ class visGroups:
             self.groupGroupingIters += 1
         
             self.make_group_features()
-                    
-            # determine the features that were just added with make_group_features()
-            if vgConfig.noImages:
-                groupFeats = [feat for feat in vgConfig.noImageVisicon if feat not in self.visFeats]
-            else:
-                groupFeats = [feat for feat in vgConfig.currentVisicon if feat not in self.visFeats]
-        
-            # add the group features to the list of visual features
-            self.visFeats.extend(groupFeats)
-                        
-            # convert the group features to visPoint objects and add them to the visPoint list    
-            self.build_from_featureList(groupFeats)
                         
             self.prevGroupCount = self.groupCount
                 
@@ -164,6 +152,8 @@ class visGroups:
             radiusMod = radiusMod*2
             
             if (self.groupCount - self.prevGroupCount)==1:
+                # add the last group feature (the "metagroup", ie the group that contains all other groups)
+                self.make_group_features()
                 self.metaGrouped = True
         
         
@@ -171,8 +161,6 @@ class visGroups:
         
     
     def make_group_features(self):
-                
-        #groupFeatureIds = []
         
         for groupIdx in self.groupIdxs[self.prevGroupCount:]:
             
@@ -210,6 +198,18 @@ class visGroups:
                                         'HEIGHT',groupHeight,
                                         'WIDTH',groupWidth,
                                         'VALUE',self.groupNames[groupIdx]])
+        
+        # determine the features that were just added
+        if vgConfig.noImages:
+            groupFeats = [feat for feat in vgConfig.noImageVisicon if feat not in self.visFeats]
+        else:
+            groupFeats = [feat for feat in vgConfig.currentVisicon if feat not in self.visFeats]
+        
+        # add the new group features to the list of visual features
+        self.visFeats.extend(groupFeats)
+                        
+        # convert the new group features to visPoint objects and add them to the visPoint list    
+        self.build_from_featureList(groupFeats)
             
         
     
@@ -223,7 +223,6 @@ class visGroups:
         for pt in self.visPoints:
             if pt.groupName is None:
                 pt.groupName = self.groupNames[pt.groupIdx]
-                #vgLabeling.actr.set_chunk_slot_value(pt.visiconID,"GROUP",pt.groupName)
                 vgConfig.modVisLock = True
                 vgLabeling.actr.modify_visicon_features([pt.visiconID,"GROUP",pt.groupName])
                 vgConfig.modVisLock = False

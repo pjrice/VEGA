@@ -199,11 +199,11 @@ def mk_grpFeatModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=
             height = height*scaleFactor
             width = width*scaleFactor
         
-            # compute edges as though x/y coords are top left corner of object
-            leftEdge = xCoord
-            rightEdge = xCoord+width
-            topEdge = yCoord
-            bottomEdge = yCoord+height
+            # compute edges - x/y coords are centered on object
+            leftEdge = int(xCoord-(width/2))
+            rightEdge = int(xCoord+(width/2))
+            topEdge = int(yCoord-(height/2))
+            bottomEdge = int(yCoord+(height/2))
             
     
     
@@ -229,11 +229,11 @@ def mk_grpFeatModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=
                 height = getattr(vp,'HEIGHT')
                 width = getattr(vp,'WIDTH')
         
-                # compute edges as though x/y coords are top left corner of object
-                leftEdge = xCoord
-                rightEdge = xCoord+width
-                topEdge = yCoord
-                bottomEdge = yCoord+height
+                # compute edges - x/y coords are centered on object
+                leftEdge = int(xCoord-(width/2))
+                rightEdge = int(xCoord+(width/2))
+                topEdge = int(yCoord-(height/2))
+                bottomEdge = int(yCoord+(height/2))
             
                 leftEdge = (leftEdge-groupPad)*scaleFactor
                 rightEdge = (rightEdge+groupPad)*scaleFactor
@@ -252,15 +252,6 @@ def mk_grpFeatModelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=
                 
         groupPad += 6
             
-            
-            
-    #prep folder/filename
-    if not os.path.isdir(saveFolder+'_'.join(radii)+'px/'):
-        saveFolder = saveFolder+'_'.join(radii)+'px/'
-        os.mkdir(saveFolder)
-    else:
-        saveFolder = saveFolder+'_'.join(radii)+'px/'
-    
     #write image
     cv2.imwrite(saveFolder+stimName+'.jpg',img2write)
     

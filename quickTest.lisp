@@ -22,6 +22,12 @@
 
 ;(chunk-type (group (:include visual-object)) (group t))
 
+(defun add-group-chunk-type ()
+    (chunk-type (group (:include visual-object)) (group t))
+)
+
+(add-act-r-command "add-group-chunk-type" 'add-group-chunk-type)
+
 
 ;(run-single '("No-Lines-Color-refactor" nil nil nil nil nil) nil nil t)
 ;(run-single '("No-Lines-Color-Box-refactor" nil nil nil nil nil) nil nil t)
