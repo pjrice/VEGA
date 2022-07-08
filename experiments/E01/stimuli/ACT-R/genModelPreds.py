@@ -4,7 +4,8 @@ import glob
 
 xmlFolder = '/home/ausmanpa/gp/VEGA/experiments/E01/stimuli/numbered_jpg/'
 #saveFolder = '/home/ausmanpa/Desktop/testing/'
-saveFolder = '/home/ausmanpa/Desktop/testing/groupFeatsModelPreds/'
+#saveFolder = '/home/ausmanpa/Desktop/testing/groupFeatsModelPreds/'
+saveFolder = '/home/ausmanpa/Desktop/testing/AGF_minDist_modelPreds/'
 
 xmlFiles = glob.glob(xmlFolder+'*.xml')
 

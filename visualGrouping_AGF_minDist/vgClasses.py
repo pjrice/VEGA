@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 
 import vgConfig
@@ -46,9 +47,9 @@ class visPoint:
              
 
 class visGroups:
-    def __init__(self, currVisicon, glomRadius, glomType):
+    def __init__(self, currVisicon, glomType):
         self.visFeats = currVisicon
-        self.glomRadius = glomRadius
+        self.glomRadius = 0
         self.glomType = glomType
         self.visPoints = []
         self.groupCount = 0
@@ -65,11 +66,29 @@ class visGroups:
             self.build_from_visicon()
         
         # using the info in self.visPoints, perform the grouping here
-        if self.glomRadius:
-            self.glom_groups(self.glomRadius)
-            self.label_groups()
-            self.group_groups()
+        self.glom_groups(self.glomRadius)
+        self.label_groups()
+        self.group_groups()
         
+    def determine_radius(self):
+        candidatePoints = [vp for vp in self.visPoints if vp.groupGroupingIter==self.groupGroupingIters]
+        
+        if len(candidatePoints) <= 1:
+            pass
+        else:
+            #https://stackoverflow.com/questions/942543/operation-on-every-pair-of-element-in-a-list
+            distances = []
+            for pair in itertools.combinations(candidatePoints,2):
+                p1x = getattr(pair[0],'SCREEN-X')
+                p1y = getattr(pair[0],'SCREEN-Y')
+                p2x = getattr(pair[1],'SCREEN-X')
+                p2y = getattr(pair[1],'SCREEN-Y')
+                p1 = (p1x,p1y)
+                p2 = (p2x,p2y)
+                distances.append(vgCollision.xy_euclidian_distance(p1,p2))
+            
+            self.glomRadius = min(distances)
+    
     def build_from_visicon(self):
         for feat in self.visFeats:
             self.visPoints.append(visPoint(feat))
@@ -134,23 +153,21 @@ class visGroups:
                     
     
     def group_groups(self):
-        
-        radiusMod = 2
-        
+                
         while not self.metaGrouped:
             
             self.groupGroupingIters += 1
         
             self.make_group_features()
                         
+            self.determine_radius()
+            
             self.prevGroupCount = self.groupCount
                         
-            self.glom_groups(self.glomRadius*radiusMod)
+            self.glom_groups(self.glomRadius)
             
             self.label_groups()
-                        
-            radiusMod = radiusMod*2
-            
+                                    
             if (self.groupCount - self.prevGroupCount)==1:
                 # add the last group feature (the "metagroup", ie the group that contains all other groups)
                 self.groupGroupingIters += 1
