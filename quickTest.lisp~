@@ -45,7 +45,6 @@
 (add-act-r-command "add-group-chunk-type" 'add-group-chunk-type)
 
 
-(run-single '("BrowardBallot-refactor" "all-perfect-broward-test" "Vote-Left-Right-lv1" "Relative-Positions-Color-Practice" "VG-Serial-Retrieve-novbp-lv1-check" "click-closest-modified_practice" "Check-Left-Right-lv1") nil t t)
 
 
 ;(run-single '("No-Lines-Color-refactor" nil nil nil nil nil) nil nil t)

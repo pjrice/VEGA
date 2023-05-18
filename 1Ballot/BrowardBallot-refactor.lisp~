@@ -351,7 +351,7 @@ on ticket jointly."
         
         ; Place header on the screen
         ; add image box for instructions
-        ;(add-image-to-exp-window *window* "box" "lb.gif" :x (- instr-x 6) :y instr-y-header :width 700 :height 48 :clickable nil)
+        (add-image-to-exp-window *window* "box" "lb.gif" :x (- instr-x 6) :y instr-y-header :width 700 :height 48 :clickable nil)
         
         ;add instruction texts    
         (add-text-to-exp-window *window* (header-a instr) :color 'black :x instr-x :y instr-y-header)
