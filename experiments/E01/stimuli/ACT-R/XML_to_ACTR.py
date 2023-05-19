@@ -18,8 +18,10 @@ def parseXMLtoACTR(xmlFile):
         if 'value' in item.keys():
             if len(item.get('value'))==1:
                 val = item.get('value')
-            else:
+            elif len(item.get('value'))>1:
                 val = item.get('value').split('</span>')[0][-1]
+            else:
+                val = None
         
             geom = list(item)[0]
             xCoord = int(geom.get('x'))
