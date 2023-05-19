@@ -17,6 +17,9 @@
 
 (run-environment)
 
+(define-model dummy (sgp :force-visual-commands t))
+
+
 
 (defun run-model-from-python ()
   (vote nil t nil nil)

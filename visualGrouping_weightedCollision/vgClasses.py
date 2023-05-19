@@ -79,7 +79,9 @@ class visGroups:
                        'weights':self.weights}
             distances.append(vgCollision.weighted_collision_distance(argDict))
         
-        self.glomRadius = statistics.median(distances)
+        #self.glomRadius = statistics.median(distances)
+        #self.glomRadius = min(distances)
+        self.glomRadius = min(distances)*1.1
         
         #self.numPoints = len(self.visPoints)
         #self.distances = distances

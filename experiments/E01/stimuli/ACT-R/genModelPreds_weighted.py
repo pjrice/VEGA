@@ -4,12 +4,9 @@ import cv2
 import numpy as np
 import glob
 
-os.chdir('/Users/pjr5/gp/VEGA/visualGrouping_weightedCollision/')
 
-import vgInterfacing
-
-os.chdir('/Users/pjr5/gp/VEGA/experiments/E01/stimuli/ACT-R')
-import XML_to_ACTR
+#os.chdir('/Users/pjr5/gp/VEGA/experiments/E01/stimuli/ACT-R')
+#import XML_to_ACTR
 
 
 
@@ -79,11 +76,6 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
         img2write[(groupBE-lineWidth):(groupBE+lineWidth),groupLE:groupRE,:] = [np.uint8(0),np.uint8(0),np.uint8(255)]
         
     #prep folder/filename
-    if not os.path.isdir(saveFolder+str(scene.glomRadius)+'px/'):
-        saveFolder = saveFolder+str(scene.glomRadius)+'px/'
-        os.mkdir(saveFolder)
-    else:
-        saveFolder = saveFolder+str(scene.glomRadius)+'px/'
     
     #write image
     cv2.imwrite(saveFolder+stimName+'.jpg',img2write)
@@ -91,13 +83,11 @@ def mk_modelPred_jpgs(scene, stimName, saveFolder, lineWidth=5, groupPad=12, sca
 
 
 
-xmlFolder = '/Users/pjr5/Desktop/weightedModelPreds/xmls/'
-saveFolder = '/Users/pjr5/Desktop/weightedModelPreds/preds/'
+xmlFolder = '/home/ausmanpa/gp/VEGA/experiments/E03/weightedModelPreds/xmls/'
+saveFolder = '/home/ausmanpa/gp/VEGA/experiments/E03/weightedModelPreds/preds/110MinRadius/'
 
 
 xmlFiles = glob.glob(xmlFolder+'*.xml')
-
-xmlFiles = xmlFiles[0]
 
 for xmlFile in xmlFiles:
     
