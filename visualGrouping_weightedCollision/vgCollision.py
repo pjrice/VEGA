@@ -27,12 +27,9 @@ def xy_euclidian_distance(p1,p2):
 
 def weighted_collision(argDict):
     
-    pWeight = 1
-    vWeight = 1
-    hWeight = 1
-    aWeight = 1
-    iWeight = 1
-    
+    return((weighted_collision_distance(argDict) <= argDict['radius']))
+
+def weighted_collision_distance(argDict):
     
     p1 = argDict['point1']
     p2 = argDict['point2']
@@ -51,16 +48,42 @@ def weighted_collision(argDict):
     p2v = getattr(p1,'VALUE')
     p2i = getattr(p2,'ISA')[1]
     
+    # get the weights to be used in the distance calc
+    weights = argDict['weights']
+    
+    pWeight = weights['proximity']
+    vWeight = weights['verticalAlignment']
+    hWeight = weights['horizontalAlignment']
+    leWeight = weights['leftEdgeAlignment']
+    reWeight = weights['rightEdgeAlignment']
+    teWeight = weights['topEdgeAlignment']
+    beWeight = weights['bottomEdgeAlignment']
+    aWeight = weights['areaSimilarity']
+    iWeight = weights['identitySimilarity']
+    
     # compute proximity (as euclidean distance)
     # closer points should be more likely to be grouped together
     proximity = xy_euclidian_distance((p1x,p1y),(p2x,p2y))
     
-    # compute vertical and horizontal alignment
+    # compute vertical and horizontal alignment of object centroids
     # points that are more aligned should be more likely to be grouped together
     # compute vertical alignment (absolute value of difference in x value)
     vAlignment = abs(p1x - p2x)
     # compute horizontal alignment (absolute value of difference in y value)
     hAlignment = abs(p1y - p2y)
+    
+    # compute vertical and horizontal alignment of object edges
+    # left edge
+    leAlignment = abs((p1x - (p1w/2)) - (p2x - (p2w/2)))
+    
+    # right edge
+    reAlignment = abs((p1x + (p1w/2)) - (p2x + (p2w/2)))
+    
+    # top edge
+    teAlignment = abs((p1y - (p1h/2)) - (p2y - (p2h/2)))
+    
+    # bottom edge
+    beAlignment = abs((p1y + (p1h/2)) - (p2y + (p2h/2)))
     
     # compute area
     # points that are similar in area should be more likely to be grouped together
@@ -75,9 +98,15 @@ def weighted_collision(argDict):
     # binary - are the two points the same "thing"? 
     identity = int(p1i==p2i)
     
+    # the smaller this value is, the "closer" the points are together on the
+    # set of axes that they're being compared on
     weightedDist = ((pWeight*proximity) + 
                     (vWeight*vAlignment) + 
-                    (hWeight*hAlignment) + 
+                    (hWeight*hAlignment) +
+                    (leWeight*leAlignment) +
+                    (reWeight*reAlignment) +
+                    (teWeight*teAlignment) +
+                    (beWeight*beAlignment) +
                     (aWeight*area) +
                     (iWeight*identity))
     

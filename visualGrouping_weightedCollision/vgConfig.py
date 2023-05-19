@@ -6,6 +6,17 @@
 # collision method to apply during grouping
 collisionMethod = 'weighted'
 
+# weights for weighted collision method
+collisionWeights = {'proximity':1,
+                    'verticalAlignment':1,
+                    'horizontalAlignment':1,
+                    'leftEdgeAlignment':1,
+                    'rightEdgeAlignment':1,
+                    'topEdgeAlignment':1,
+                    'bottomEdgeAlignment':1,
+                    'areaSimilarity':1,
+                    'identitySimilarity':1}
+
 # keeping a global list of feature ids and assuming there's only one model for 
 # now. Will wrap in actr module later to handle multiple models, etc
 

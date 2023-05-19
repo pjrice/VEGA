@@ -1,3 +1,4 @@
+import statistics
 import scipy.stats
 import itertools
 import matplotlib.pyplot as plt
@@ -45,10 +46,11 @@ class visPoint:
              
 
 class visGroups:
-    def __init__(self, currentVisicon, glomType):
+    def __init__(self, currentVisicon, glomType, collisionWeights):
         self.visFeats = currentVisicon
         self.glomRadius = 0
         self.glomType = glomType
+        self.weights = collisionWeights
         self.visPoints = None
         
         # using the maintained currentVisicon, create a set of visPoint objects
@@ -73,18 +75,20 @@ class visGroups:
         distances = []
         for pair in itertools.combinations(self.visPoints,2):
             argDict = {'point1':pair[0],
-                       'point2':pair[1]}
-            distances.append(vgCollision.weighted_collision(argDict))
+                       'point2':pair[1],
+                       'weights':self.weights}
+            distances.append(vgCollision.weighted_collision_distance(argDict))
         
-        _, bins, _ = plt.hist(distances)
-        mu, sigma = scipy.stats.norm.fit(distances)
-        bestFitLine = scipy.stats.norm.pdf(bins,mu,sigma)
-        plt.plot(bins,bestFitLine)
+        self.glomRadius = statistics.median(distances)
         
-        # first have to determine why there seemed to be 10 distances rather than 5
-        # then, this is a shit approach - 
-        # try sorting the list, then finding the largest interval between any two consecutive elements within the list
-    
+        #self.numPoints = len(self.visPoints)
+        #self.distances = distances
+        #_, bins, _ = plt.hist(distances)
+        #mu, sigma = scipy.stats.norm.fit(distances)
+        #bestFitLine = scipy.stats.norm.pdf(bins,mu,sigma)
+        #plt.plot(bins,bestFitLine)
+        
+        
     def glom_groups(self,radius):
         
         self.groupCount = 0
@@ -106,7 +110,7 @@ class visGroups:
                         argDict = {'point1':pt,
                                    'point2':target,
                                    'radius':radius,
-                                   'useZ':False}
+                                   'weights':self.weights}
                         # if the points collide (collide method that returns T/F), add it to the list of hits
                         if vgCollision.determine_pt2pt_collision(self.glomType,argDict):
                             hits.append(target)
@@ -133,7 +137,7 @@ class visGroups:
                         argDict = {'point1':pt,
                                    'point2':target,
                                    'radius':radius,
-                                   'useZ':False}
+                                   'weights':self.weights}
                         
                         if vgCollision.determine_pt2pt_collision(self.glomType,argDict):
                             hits.append(target)

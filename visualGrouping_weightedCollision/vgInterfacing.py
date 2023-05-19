@@ -245,9 +245,9 @@ def proc_display_monitor(cmd,params,success,results):
             # radius=8 for No-Lines-Color-Box
             if vgConfig.noImages:
                 noImageVisicon = [feat for feat in vgConfig.currentVisicon if feat[feat.index('ISA')+1][1]!='IMAGE']
-                vgConfig.vgScene = vgClasses.visGroups(noImageVisicon,vgConfig.collisionMethod)
+                vgConfig.vgScene = vgClasses.visGroups(noImageVisicon,vgConfig.collisionMethod,vgConfig.collisionWeights)
             else:
-                vgConfig.vgScene = vgClasses.visGroups(vgConfig.currentVisicon,vgConfig.collisionMethod)
+                vgConfig.vgScene = vgClasses.visGroups(vgConfig.currentVisicon,vgConfig.collisionMethod,vgConfig.collisionWeights)
         
             # generate and apply labels for the newly determined groups
             # label application first occurs in the python representation, and then
